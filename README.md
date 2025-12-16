@@ -131,6 +131,12 @@ After installation, ensure `psql` is on your PATH and check the version:
 psql --version
 ```
 
+If Windows still can't find `psql`, add PostgreSQL's `bin` folder to your PATH:
+
+1. Open Start → search for **"Edit the system environment variables"** → choose **Environment Variables**.
+2. Under **User variables**, select `Path` → **Edit** → **New** and add the Postgres binary path (for example, `C:\Program Files\PostgreSQL\17\bin`).
+3. Click **OK** to close all dialogs, reopen your terminal, and rerun `psql --version`.
+
 Create the database:
 
 ```powershell
