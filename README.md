@@ -1,14 +1,16 @@
 # CU_PLUS_WEBAPP
 
-A Flutter web and mobile application used by the CU project. This repository contains the Flutter frontend for the CU_PLUS_WEBAPP system. The backend lives in a separate repository named `CU_PLUS_WEBAPP_BACKEND`.
-
 ## Table of Contents
 - [Recommended Tools](#recommended-tools)
+- [Install Flutter (macOS)](#install-flutter-macos)
+- [Install Flutter (Windows)](#install-flutter-windows)
 - [Repository Setup](#repository-setup)
+- [Running the App](#running-the-app)
 - [Naming Rules](#naming-rules)
-- [Backend Setup (macOS)](#backend-setup-macos)
-- [Backend Setup (Windows)](#backend-setup-windows)
-- [Create a Dummy Account](#create-a-dummy-account)
+- [Troubleshooting](#troubleshooting)
+
+## Overview
+This repository hosts only the Flutter frontend. Backend setup and API docs now live in `CU_PLUS_WEBAPP_BACKEND/README.md`.
 
 ## Recommended Tools
 
@@ -16,6 +18,45 @@ A Flutter web and mobile application used by the CU project. This repository con
 - **Git & GitHub** — CLI or GUI
 - **JIRA** — task tracking and sprint planning
 - **ChatGPT** — debugging, explanations, and learning support
+
+## Install Flutter (macOS)
+
+1. Install Homebrew if missing:
+   ```bash
+   /bin/bash -c "$(curl -fsSL https://raw.githubusercontent.com/Homebrew/install/HEAD/install.sh)"
+   ```
+
+2. Install Flutter via `brew`:
+   ```bash
+   brew install --cask flutter
+   ```
+
+3. Add Flutter to PATH (Apple Silicon default):
+   ```bash
+   echo 'export PATH="$PATH:/opt/homebrew/Caskroom/flutter/latest/flutter/bin"' >> ~/.zshrc
+   source ~/.zshrc
+   ```
+
+4. Run Flutter Doctor:
+   ```bash
+   flutter doctor
+   ```
+
+Follow doctor’s guidance for missing Xcode/iOS/Android tooling.
+
+## Install Flutter (Windows)
+
+1. Download the Windows Flutter SDK (zip) from [flutter.dev](https://docs.flutter.dev/get-started/install/windows) and extract to `C:\src\flutter`.
+2. Add `C:\src\flutter\bin` to your PATH:
+   - Start → “Edit the system environment variables” → Environment Variables → Path → New → `C:\src\flutter\bin`
+3. Enable execution policy if needed (PowerShell as Admin):
+   ```powershell
+   Set-ExecutionPolicy RemoteSigned
+   ```
+4. Run Flutter Doctor:
+   ```powershell
+   flutter doctor
+   ```
 
 ## Repository Setup
 
@@ -40,6 +81,12 @@ CU_PROJECT/
 └── CU_PLUS_WEBAPP_BACKEND
 ```
 
+## Running the App
+
+  ```bash
+  flutter run
+  ```
+
 ## Naming Rules
 
 - Follow existing file and folder naming conventions
@@ -47,160 +94,11 @@ CU_PROJECT/
 - Dart files: snake_case
 - Class names: PascalCase
 
-## Backend Setup (macOS)
+## Troubleshooting
 
-This project uses Node.js + PostgreSQL + Prisma for the backend. Those instructions belong in the `CU_PLUS_WEBAPP_BACKEND` repo, but are reproduced here for convenience.
+- Run `flutter doctor -v` and resolve outstanding issues.
+- Delete `pubspec.lock` and rerun `flutter pub get` if dependencies glitch.
+- `flutter clean && flutter pub get` can resolve caching issues.
+- For platform-specific build errors, open the platform project (`ios/Runner.xcworkspace` or `android/`) in the native IDE and check logs.
 
-1) Install PostgreSQL (Homebrew example)
-
-```bash
-brew install postgresql@17
-brew services start postgresql@17
-psql --version
-```
-
-If `psql` is not found on macOS (Apple Silicon), add the Homebrew binary path and reload your shell:
-
-```bash
-echo 'export PATH="/opt/homebrew/opt/postgresql@17/bin:$PATH"' >> ~/.zshrc
-source ~/.zshrc
-```
-
-Create the database:
-
-```bash
-createdb cu_plus
-psql -l
-```
-
-2) Backend (Node.js + Prisma)
-
-```bash
-cd CU_PLUS_WEBAPP_BACKEND
-npm init -y
-npm i express cors dotenv
-npm i -D nodemon
-npm i prisma @prisma/client pg
-npx prisma init
-```
-
-3) Configure `.env`
-
-Open `CU_PLUS_WEBAPP_BACKEND/.env` and set:
-
-```
-DATABASE_URL="postgresql://YOUR_MAC_USERNAME@localhost:5432/cu_plus?schema=public"
-PORT=4000
-```
-
-To get your macOS username:
-
-```bash
-whoami
-```
-
-4) (Optional) Open Prisma Studio
-
-```bash
-npx prisma studio
-```
-
-5) Run the backend
-
-```bash
-cd CU_PLUS_WEBAPP_BACKEND
-npm run dev
-```
-
-## Backend Setup (Windows)
-
-These instructions mirror the macOS steps but target Windows environments (PowerShell, Command Prompt, or Git Bash). Install PostgreSQL via the official Windows installer or using Chocolatey if you prefer.
-
-1) Install PostgreSQL
-
-- Option A — Official installer: download and run the installer from the PostgreSQL website and follow the prompts (choose a password for the `postgres` user).
-- Option B — Chocolatey (PowerShell as Admin):
-
-```powershell
-choco install postgresql
-```
-
-After installation, ensure `psql` is on your PATH and check the version:
-
-```powershell
-psql --version
-```
-
-If Windows still can't find `psql`, add PostgreSQL's `bin` folder to your PATH:
-
-1. Open Start → search for **"Edit the system environment variables"** → choose **Environment Variables**.
-2. Under **User variables**, select `Path` → **Edit** → **New** and add the Postgres binary path (for example, `C:\Program Files\PostgreSQL\17\bin`).
-3. Click **OK** to close all dialogs, reopen your terminal, and rerun `psql --version`.
-
-Create the database:
-
-```powershell
-createdb cu_plus
-psql -l
-```
-
-If `createdb` is not available in your shell, open the `psql` shell and run:
-
-```sql
-CREATE DATABASE cu_plus;
-\l
-```
-
-2) Backend (Node.js + Prisma)
-
-Install Node.js (from nodejs.org or using nvm for Windows). Then run the same backend setup commands from the `CU_PLUS_WEBAPP_BACKEND` folder:
-
-```powershell
-cd CU_PLUS_WEBAPP_BACKEND
-npm init -y
-npm i express cors dotenv
-npm i -D nodemon
-npm i prisma @prisma/client pg
-npx prisma init
-```
-
-3) Configure `.env`
-
-Open `CU_PLUS_WEBAPP_BACKEND/.env` and set (include the DB user and password you created during Postgres installation):
-
-```
-DATABASE_URL="postgresql://postgres:YOUR_DB_PASSWORD@localhost:5432/cu_plus?schema=public"
-PORT=4000
-```
-
-4) Run migrations and (optional) Prisma Studio
-
-```powershell
-npx prisma migrate dev --name init
-npx prisma studio
-```
-
-5) Run the backend
-
-```powershell
-cd CU_PLUS_WEBAPP_BACKEND
-npm run dev
-```
-
-## Create a Dummy Account
-
-To create an initial test user you can use Git Bash or macOS-style curl, or PowerShell's web cmdlets.
-
-- Git Bash / POSIX curl:
-
-```bash
-curl -X POST http://localhost:4000/auth/register \
-  -H "Content-Type: application/json" \
-  -d '{"email":"test@student.edu","password":"password123","name":"Test Student"}'
-```
-
-- PowerShell (Invoke-RestMethod):
-
-```powershell
-Invoke-RestMethod -Method POST -Uri http://localhost:4000/auth/register -ContentType 'application/json' -Body '{"email":"test@student.edu","password":"password123","name":"Test Student"}'
-```
+---
