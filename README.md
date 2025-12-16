@@ -13,12 +13,29 @@ A Flutter web and mobile application used by the CU project. This repository con
 
 - **Visual Studio Code** — recommended extensions: Prettier, GitHub Copilot, Indent Rainbow
 - **Git & GitHub** — CLI or GUI
+# CU_PLUS_WEBAPP
+
+A Flutter web and mobile application used by the CU project. This repository contains the Flutter frontend for the CU_PLUS_WEBAPP system. The backend lives in a separate repository named `CU_PLUS_WEBAPP_BACKEND`.
+
+## Table of Contents
+- [Recommended Tools](#recommended-tools)
+- [Repository Setup](#repository-setup)
+- [Naming Rules](#naming-rules)
+- [Backend Setup (macOS)](#backend-setup-macos)
+- [Backend Setup (Windows)](#backend-setup-windows)
+- [Create a Dummy Account](#create-a-dummy-account)
+
+## Recommended Tools
+
+- **Visual Studio Code** — recommended extensions: Prettier, GitHub Copilot, Indent Rainbow
+- **Git & GitHub** — CLI or GUI
 - **JIRA** — task tracking and sprint planning
 - **ChatGPT** — debugging, explanations, and learning support
 
 ## Repository Setup
 
-Important: clone both frontend and backend repositories into the same parent folder.
+⚠️ **IMPORTANT:**  
+Clone BOTH repositories into the **same parent folder**.
 
 Example:
 
@@ -110,9 +127,80 @@ cd CU_PLUS_WEBAPP_BACKEND
 npm run dev
 ```
 
+## Backend Setup (Windows)
+
+These instructions mirror the macOS steps but target Windows environments (PowerShell, Command Prompt, or Git Bash). Install PostgreSQL via the official Windows installer or using Chocolatey if you prefer.
+
+1) Install PostgreSQL
+
+- Option A — Official installer: download and run the installer from the PostgreSQL website and follow the prompts (choose a password for the `postgres` user).
+- Option B — Chocolatey (PowerShell as Admin):
+
+```powershell
+choco install postgresql
+```
+
+After installation, ensure `psql` is on your PATH and check the version:
+
+```powershell
+psql --version
+```
+
+Create the database:
+
+```powershell
+createdb cu_plus
+psql -l
+```
+
+If `createdb` is not available in your shell, open the `psql` shell and run:
+
+```sql
+CREATE DATABASE cu_plus;
+\l
+```
+
+2) Backend (Node.js + Prisma)
+
+Install Node.js (from nodejs.org or using nvm for Windows). Then run the same backend setup commands from the `CU_PLUS_WEBAPP_BACKEND` folder:
+
+```powershell
+cd CU_PLUS_WEBAPP_BACKEND
+npm init -y
+npm i express cors dotenv
+npm i -D nodemon
+npm i prisma @prisma/client pg
+npx prisma init
+```
+
+3) Configure `.env`
+
+Open `CU_PLUS_WEBAPP_BACKEND/.env` and set (include the DB user and password you created during Postgres installation):
+
+```
+DATABASE_URL="postgresql://postgres:YOUR_DB_PASSWORD@localhost:5432/cu_plus?schema=public"
+PORT=4000
+```
+
+4) Run migrations and (optional) Prisma Studio
+
+```powershell
+npx prisma migrate dev --name init
+npx prisma studio
+```
+
+5) Run the backend
+
+```powershell
+cd CU_PLUS_WEBAPP_BACKEND
+npm run dev
+```
+
 ## Create a Dummy Account
 
-To create an initial test user (example curl):
+To create an initial test user you can use Git Bash or macOS-style curl, or PowerShell's web cmdlets.
+
+- Git Bash / POSIX curl:
 
 ```bash
 curl -X POST http://localhost:4000/auth/register \
@@ -120,12 +208,8 @@ curl -X POST http://localhost:4000/auth/register \
   -d '{"email":"test@student.edu","password":"password123","name":"Test Student"}'
 ```
 
----
+- PowerShell (Invoke-RestMethod):
 
-If you'd like, I can:
-
-- add badges (build, license)
-- link to the backend README
-- add instructions for running the Flutter app locally
-
-Tell me which of those you'd like next.
+```powershell
+Invoke-RestMethod -Method POST -Uri http://localhost:4000/auth/register -ContentType 'application/json' -Body '{"email":"test@student.edu","password":"password123","name":"Test Student"}'
+```
