@@ -8,6 +8,10 @@
 - [Running the App](#running-the-app)
 - [Naming Rules](#naming-rules)
 - [Troubleshooting](#troubleshooting)
+- [Folder Structure](#frontend-structure)
+- [How to create add your own features](#frontend-structure)
+- [Adding more images or other assets](#quick-tips)
+
 
 ## Overview
 This repository hosts only the Flutter frontend. Backend setup and API docs now live in `CU_PLUS_WEBAPP_BACKEND/README.md`.
@@ -100,5 +104,45 @@ CU_PROJECT/
 - Delete `pubspec.lock` and rerun `flutter pub get` if dependencies glitch.
 - `flutter clean && flutter pub get` can resolve caching issues.
 - For platform-specific build errors, open the platform project (`ios/Runner.xcworkspace` or `android/`) in the native IDE and check logs.
+
+## Frontend Structure
+
+```
+CU_PLUS_WEBAPP/
+├── lib/
+│   ├── core/
+│   │   ├── config/            # Global constants (API base URLs, themes, etc.)
+│   │   └── network/           # ApiClient and shared HTTP helpers
+│   ├── features/
+│   │   └── auth/
+│   │       ├── data/          # API wrappers (e.g., auth_api.dart)
+│   │       ├── models/        # DTOs (User, AuthResponse, etc.)
+│   │       └── ui/            # Screens/widgets (LoginPage, HomePage, etc.)
+│   └── main.dart              # App entry point
+├── assets/                    # Images, icons, fonts
+├── pubspec.yaml               # Dependencies and asset declarations
+└── README.md
+```
+
+### Add More API Calls
+- Create a new method inside the relevant `features/<feature>/data/*.dart` file.
+- Use `ApiClient` from `lib/core/network/api_client.dart` to keep authentication headers and base URLs consistent.
+- Add/update models in `features/<feature>/models/` if the response shape changes.
+- Keep feature-specific logic inside its folder; don’t mix unrelated APIs into `auth_api.dart`.
+
+### Add New UI Pages
+- Create a widget file inside `features/<feature>/ui/`, following the existing naming convention (e.g., `settings_page.dart`).
+- Wire navigation from the appropriate screen using `Navigator.push`/`pushReplacement`.
+- Share common widgets via a dedicated `widgets/` subfolder if a feature grows.
+
+### Quick Tips
+- Register new features by importing them in `main.dart` or the relevant coordinator widget.
+- Update `assets/` and `pubspec.yaml` when you add images or fonts.
+- Keep each feature self-contained: `data` → API, `models` → payloads, `ui` → screens.
+
+### Adding New Features (e.g., Dashboard)
+
+Create a new folder under `lib/features/` for each feature. For a dashboard, use `lib/features/dashboard/` with its own `data/`, `models/`, and `ui/` subdirectories. Keep authentication-specific screens in `features/auth/` and place dashboard pages in `features/dashboard/ui/`. This keeps APIs, models, and widgets scoped to their feature and makes future maintenance much easier.
+
 
 ---

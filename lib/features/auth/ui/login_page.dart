@@ -1,7 +1,8 @@
 import 'package:flutter/material.dart';
 import '../../../core/network/api_client.dart';
 import '../data/auth_api.dart';
-import 'home_page.dart';
+import '../../dashboard/home_page.dart';
+import 'package:flutter_svg/flutter_svg.dart';
 
 class LoginPage extends StatefulWidget {
   const LoginPage({super.key});
@@ -92,7 +93,18 @@ class _LoginPageState extends State<LoginPage> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      appBar: AppBar(title: const Text("Login")),
+      appBar: AppBar(
+        title: const Text(
+          "Plus Scholar Cameron",
+          style: TextStyle(color: Colors.black, fontWeight: FontWeight.bold),
+        ),
+        backgroundColor: Colors.white,
+        leading: Padding(
+          padding: const EdgeInsets.all(8.0),
+          child: Image.asset('assets/images/cameron_logo2.png'),
+        ),
+      ),
+      backgroundColor: Colors.white,
       body: Center(
         child: ConstrainedBox(
           constraints: const BoxConstraints(maxWidth: 420),
@@ -103,6 +115,8 @@ class _LoginPageState extends State<LoginPage> {
               child: Column(
                 mainAxisSize: MainAxisSize.min,
                 children: [
+                  const SizedBox(height: 24),
+
                   TextFormField(
                     controller: _emailCtrl,
                     decoration: const InputDecoration(labelText: "Email"),
@@ -136,7 +150,21 @@ class _LoginPageState extends State<LoginPage> {
                     width: double.infinity,
                     child: ElevatedButton(
                       onPressed: _loading ? null : _onLogin,
-                      child: Text(_loading ? "Logging in..." : "Login"),
+                      child: Text(
+                        _loading ? "Logging in..." : "Login",
+                        style: const TextStyle(
+                          color: Colors.black,
+                          // fontWeight: FontWeight.bold,
+                        ),
+                      ),
+                      style: ElevatedButton.styleFrom(
+                        backgroundColor: Color(0xFFFFC425),
+                        shape: RoundedRectangleBorder(
+                          borderRadius: BorderRadius.circular(8),
+                        ),
+                        elevation: 3,
+                        padding: const EdgeInsets.symmetric(vertical: 20),
+                      ),
                     ),
                   ),
 
