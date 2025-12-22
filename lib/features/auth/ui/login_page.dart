@@ -101,7 +101,9 @@ class _LoginPageState extends State<LoginPage> {
         backgroundColor: Colors.white,
         leading: Padding(
           padding: const EdgeInsets.only(left: 20.0),
-          child: Image.asset('assets/images/cameron_logo2.png'),
+          child: 
+          Image.asset('assets/images/cameron_logo2.png'),
+          // SvgPicture.asset('assets/images/cameron_logo2_embedded.svg'),
         ),
       ),
       backgroundColor: Colors.white,
