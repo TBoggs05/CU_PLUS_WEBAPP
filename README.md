@@ -115,8 +115,7 @@ CU_PLUS_WEBAPP/
 │   │   └── network/           # ApiClient and shared HTTP helpers
 │   ├── features/
 │   │   └── auth/
-│   │       ├── data/          # API wrappers (e.g., auth_api.dart)
-│   │       ├── models/        # DTOs (User, AuthResponse, etc.)
+│   │       ├── api/           # API wrappers (e.g., auth_api.dart)
 │   │       └── ui/            # Screens/widgets (LoginPage, HomePage, etc.)
 │   └── main.dart              # App entry point
 ├── assets/                    # Images, icons, fonts
@@ -125,9 +124,8 @@ CU_PLUS_WEBAPP/
 ```
 
 ### Add More API Calls
-- Create a new method inside the relevant `features/<feature>/data/*.dart` file.
+- Create a new api method inside the relevant `features/<feature>/api/*.dart` file.
 - Use `ApiClient` from `lib/core/network/api_client.dart` to keep authentication headers and base URLs consistent.
-- Add/update models in `features/<feature>/models/` if the response shape changes.
 - Keep feature-specific logic inside its folder; don’t mix unrelated APIs into `auth_api.dart`.
 
 ### Add New UI Pages
@@ -142,7 +140,7 @@ CU_PLUS_WEBAPP/
 
 ### Adding New Features (e.g., Dashboard)
 
-Create a new folder under `lib/features/` for each feature. For a dashboard, use `lib/features/dashboard/` with its own `data/`, `models/`, and `ui/` subdirectories. Keep authentication-specific screens in `features/auth/` and place dashboard pages in `features/dashboard/ui/`. This keeps APIs, models, and widgets scoped to their feature and makes future maintenance much easier.
+Create a new folder under `lib/features/` for each feature. For a dashboard, use `lib/features/dashboard/` with its own `api/`, and `ui/` subdirectories. Keep authentication-specific screens in `features/auth/` and place dashboard pages in `features/dashboard/ui/`. This keeps APIs, models, and widgets scoped to their feature and makes future maintenance much easier.
 
 
 ---
