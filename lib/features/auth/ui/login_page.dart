@@ -99,245 +99,180 @@ class _LoginPageState extends State<LoginPage> {
           style: TextStyle(color: Colors.black, fontWeight: FontWeight.bold),
         ),
         backgroundColor: Colors.white,
+        leadingWidth: 60,
         leading: Padding(
           padding: const EdgeInsets.only(left: 20.0),
-          child: 
-          Image.asset('assets/images/cameron_logo2.png'),
-          // SvgPicture.asset('assets/images/cameron_logo2_embedded.svg'),
+          child: Image.asset('assets/images/cameron_logo2.png'),
         ),
       ),
       backgroundColor: Colors.white,
-      body: Center(
-        child: ConstrainedBox(
-          constraints: const BoxConstraints(maxWidth: 500),
-          child: Padding(
-            padding: const EdgeInsets.all(30),
-            child: Form(
-              key: _formKey,
-              child: Column(
-                mainAxisSize: MainAxisSize.min,
-                children: [
-                  const SizedBox(height: 0),
-                  const Text(
-                    "Login",
-                    style: TextStyle(fontSize: 32, fontWeight: FontWeight.bold),
-                  ),
-                  const SizedBox(height: 80),
-
-                  Column(
-                    crossAxisAlignment: CrossAxisAlignment.start,
-                    children: [
-                      const Text(
-                        "Cameron Email",
-                        style: TextStyle(fontSize: 16),
-                      ),
-                      const SizedBox(height: 10),
-                      TextFormField(
-                        controller: _emailCtrl,
-                        keyboardType: TextInputType.emailAddress,
-                        validator: (v) {
-                          final s = (v ?? "").trim();
-                          if (s.isEmpty) return "Email is required";
-                          if (!s.contains("@")) return "Enter a valid email";
-                          return null;
-                        },
-                        style: const TextStyle(color: Colors.black),
-                        decoration: InputDecoration(
-                          hintText: "name@cameron.edu",
-
-                          filled: true,
-                          fillColor: Color(0xFFF5F5F5),
-
-                          border: OutlineInputBorder(
-                            borderRadius: BorderRadius.circular(8),
-                            borderSide: const BorderSide(color: Colors.grey),
+      body: Padding(
+        padding: const EdgeInsets.all(30),
+        child: Column(
+          mainAxisSize: MainAxisSize.max,
+          crossAxisAlignment: CrossAxisAlignment.stretch,
+          // Top Input fields
+          children: [
+            const SizedBox(height: 10),
+            Column(
+              crossAxisAlignment: CrossAxisAlignment.start,
+              children: [
+                Column(
+                  crossAxisAlignment: CrossAxisAlignment.start,
+                  children: [
+                    const Text("School Email", style: TextStyle(fontSize: 16, color: Color(0xFF111928))),
+                    const SizedBox(height: 10),
+                    TextFormField(
+                      controller: _emailCtrl,
+                      keyboardType: TextInputType.emailAddress,
+                      validator: (v) {
+                        final s = (v ?? "").trim();
+                        if (s.isEmpty) return "Email is required";
+                        if (!s.contains("@")) return "Enter a valid email";
+                        return null;
+                      },
+                      style: const TextStyle(color: Colors.black),
+                      decoration: InputDecoration(
+                        hintText: "name@cameron.edu",
+                        hintStyle: const TextStyle(color: Color(0xFF6B7280)),
+        
+                        filled: true,
+                        fillColor: Color(0xFFF9FAFB),
+        
+                        border: OutlineInputBorder(
+                          borderRadius: BorderRadius.circular(8),
+                          borderSide: const BorderSide(color: Color(0xFFD1D5DB)),
+                        ),
+        
+                        enabledBorder: OutlineInputBorder(
+                          borderRadius: BorderRadius.circular(8),
+                          borderSide: const BorderSide(color: Color(0xFFD1D5DB)),
+                        ),
+        
+                        focusedBorder: OutlineInputBorder(
+                          borderRadius: BorderRadius.circular(8),
+                          borderSide: const BorderSide(
+                            color: Colors.black,
+                            width: 1.5,
                           ),
-
-                          enabledBorder: OutlineInputBorder(
-                            borderRadius: BorderRadius.circular(8),
-                            borderSide: const BorderSide(color: Colors.grey),
-                          ),
-
-                          focusedBorder: OutlineInputBorder(
-                            borderRadius: BorderRadius.circular(8),
-                            borderSide: const BorderSide(
-                              color: Colors.black,
-                              width: 1.5,
-                            ),
-                          ),
-
-                          errorBorder: OutlineInputBorder(
-                            borderRadius: BorderRadius.circular(8),
-                            borderSide: const BorderSide(color: Colors.red),
-                          ),
-
-                          focusedErrorBorder: OutlineInputBorder(
-                            borderRadius: BorderRadius.circular(8),
-                            borderSide: const BorderSide(
-                              color: Colors.red,
-                              width: 1.5,
-                            ),
+                        ),
+        
+                        errorBorder: OutlineInputBorder(
+                          borderRadius: BorderRadius.circular(8),
+                          borderSide: const BorderSide(color: Colors.red),
+                        ),
+        
+                        focusedErrorBorder: OutlineInputBorder(
+                          borderRadius: BorderRadius.circular(8),
+                          borderSide: const BorderSide(
+                            color: Colors.red,
+                            width: 1.5,
                           ),
                         ),
                       ),
-                    ],
-                  ),
-
-                  const SizedBox(height: 34),
-
-                  Column(
-                    crossAxisAlignment: CrossAxisAlignment.start,
-                    children: [
-                      const Text("Password", style: TextStyle(fontSize: 16)),
-                      const SizedBox(height: 10),
-                      TextFormField(
-                        controller: _passCtrl,
-                        obscureText: true,
-                        validator: (v) {
-                          if ((v ?? "").isEmpty) return "Password is required";
-                          if ((v ?? "").length < 6) return "Min 6 characters";
-                          return null;
-                        },
-                        style: const TextStyle(color: Colors.black),
-                        decoration: InputDecoration(
-                          hintText: "*********",
-
-                          filled: true,
-                          fillColor: Color(0xFFF5F5F5),
-
-                          border: OutlineInputBorder(
-                            borderRadius: BorderRadius.circular(8),
-                            borderSide: const BorderSide(color: Colors.grey),
-                          ),
-
-                          enabledBorder: OutlineInputBorder(
-                            borderRadius: BorderRadius.circular(8),
-                            borderSide: const BorderSide(color: Colors.grey),
-                          ),
-
-                          focusedBorder: OutlineInputBorder(
-                            borderRadius: BorderRadius.circular(8),
-                            borderSide: const BorderSide(
-                              color: Colors.black,
-                              width: 1.5,
-                            ),
-                          ),
-
-                          errorBorder: OutlineInputBorder(
-                            borderRadius: BorderRadius.circular(8),
-                            borderSide: const BorderSide(color: Colors.red),
-                          ),
-
-                          focusedErrorBorder: OutlineInputBorder(
-                            borderRadius: BorderRadius.circular(8),
-                            borderSide: const BorderSide(
-                              color: Colors.red,
-                              width: 1.5,
-                            ),
-                          ),
-                        ),
-                      ),
-                    ],
-                  ),
-
-                  if (_error != null) ...[
-                    Text(_error!, style: const TextStyle(color: Colors.red)),
-                    const SizedBox(height: 12),
+                    ),
                   ],
-
-                  const SizedBox(height: 10),
-
-                  Row(
-                    mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                    children: [
-                      Row(
-                        children: [
-                          const Text(
-                            "Remember me",
-                            style: TextStyle(
-                              fontSize: 16,
-                              fontWeight: FontWeight.normal,
-                              color: Colors.black,
-                            ),
+                ),
+        
+                const SizedBox(height: 34),
+        
+                Column(
+                  crossAxisAlignment: CrossAxisAlignment.start,
+                  children: [
+                    const Text("Password", style: TextStyle(fontSize: 16, color: Color(0xFF111928))),
+                    const SizedBox(height: 10),
+                    TextFormField(
+                      controller: _passCtrl,
+                      obscureText: true,
+                      validator: (v) {
+                        if ((v ?? "").isEmpty) return "Password is required";
+                        if ((v ?? "").length < 6) return "Min 6 characters";
+                        return null;
+                      },
+                      style: const TextStyle(color: Colors.black),
+                      decoration: InputDecoration(
+                        hintText: "••••••••••",
+                        hintStyle: const TextStyle(color: Color(0xFF6B7280)),
+        
+                        filled: true,
+                        fillColor: Color(0xFFF9FAFB),
+        
+                        border: OutlineInputBorder(
+                          borderRadius: BorderRadius.circular(8),
+                          borderSide: const BorderSide(color: Color(0xFFD1D5DB)),
+                        ),
+        
+                        enabledBorder: OutlineInputBorder(
+                          borderRadius: BorderRadius.circular(8),
+                          borderSide: const BorderSide(color: Color(0xFFD1D5DB)),
+                        ),
+        
+                        focusedBorder: OutlineInputBorder(
+                          borderRadius: BorderRadius.circular(8),
+                          borderSide: const BorderSide(
+                            color: Colors.black,
+                            width: 1.5,
                           ),
-                          Checkbox(
-                            value: true,
-                            onChanged: (v) {},
-                            activeColor: Colors.grey.shade300,
+                        ),
+        
+                        errorBorder: OutlineInputBorder(
+                          borderRadius: BorderRadius.circular(8),
+                          borderSide: const BorderSide(color: Colors.red),
+                        ),
+        
+                        focusedErrorBorder: OutlineInputBorder(
+                          borderRadius: BorderRadius.circular(8),
+                          borderSide: const BorderSide(
+                            color: Colors.red,
+                            width: 1.5,
                           ),
-                        ],
-                      ),
-
-                      const Text(
-                        "Forgot password",
-                        style: TextStyle(
-                          fontSize: 16,
-                          fontWeight: FontWeight.normal,
-                          color: Colors.black,
                         ),
                       ),
-                    ],
-                  ),
-
-                  const SizedBox(height: 50),
-
-                  SizedBox(
-                    width: double.infinity,
-                    child: Column(
-                      mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                    ),
+                  ],
+                ),
+        
+                if (_error != null) ...[
+                  Text(_error!, style: const TextStyle(color: Colors.red)),
+                  const SizedBox(height: 12),
+                ],
+        
+                Row(
+                  mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                  children: [
+                    Row(
                       children: [
-                        ElevatedButton(
-                          onPressed: _loading ? null : _onLogin,
-                          // ignore: sort_child_properties_last
-                          child: Text(
-                            _loading ? "Signing in..." : "Sign in",
-                            style: const TextStyle(
-                              color: Colors.white,
-                              fontWeight: FontWeight.normal,
-                              fontSize: 24,
-                            ),
-                          ),
-                          style: ElevatedButton.styleFrom(
-                            backgroundColor: Color(0xFFFFC425),
-                            shape: RoundedRectangleBorder(
-                              borderRadius: BorderRadius.circular(10),
-                            ),
-                            elevation: 3, // shadow
-                            padding: const EdgeInsets.symmetric(
-                              vertical: 22,
-                              horizontal: 60,
-                            ),
+                        const Text(
+                          "Remember me",
+                          style: TextStyle(
+                            fontSize: 16,
+                            fontWeight: FontWeight.normal,
+                            color: Color(0xFF787878),
                           ),
                         ),
-
-                        const SizedBox(height: 14),
-
-                        TextButton(
-                          onPressed: () => null,
-                          child: const Text(
-                            'Back',
-                            style: TextStyle(
-                              fontSize: 16,
-                              fontWeight: FontWeight.normal,
-                            ),
-                          ),
-                          style: TextButton.styleFrom(
-                            foregroundColor: Colors.black,
-                            backgroundColor: Color.fromARGB(255, 255, 255, 255),
-                          ),
+                        Checkbox(
+                          value: true,
+                          onChanged: (v) {},
+                          activeColor: Color(0xFFD9D9D9),
                         ),
                       ],
                     ),
-                  ),
-
-                  if (_tokenPreview != null) ...[
-                    const SizedBox(height: 12),
-                    Text("Token: $_tokenPreview"),
+        
+                    const Text(
+                      "Forgot password?",
+                      style: TextStyle(
+                        fontSize: 16,
+                        fontWeight: FontWeight.normal,
+                        color: Color(0xFF787878),
+                      ),
+                    ),
                   ],
-                ],
-              ),
+                ),
+        
+                const SizedBox(height: 50),
+              ],
             ),
-          ),
+          ],
         ),
       ),
     );
