@@ -97,24 +97,13 @@ class _LoginPageState extends State<LoginPage> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      appBar: AppBar(
-        title: const Text(
-          "Plus Scholar Cameron",
-          style: TextStyle(color: Colors.black, fontWeight: FontWeight.bold),
-        ),
-        backgroundColor: Colors.white,
-        leadingWidth: 60,
-        leading: Padding(
-          padding: const EdgeInsets.only(left: 20.0),
-          child: Image.asset('assets/images/cameron_logo2.png'),
-        ),
-      ),
+      appBar: topBar(),
       backgroundColor: Colors.white,
       body: LayoutBuilder(
         builder: (context, constraints) {
           final isDesktop = constraints.maxWidth >= 900;
 
-          final content = PhoneVersion(context); // phone ui
+          final content = phoneVersion(context); // phone ui
 
           if (!isDesktop) return content;
 
@@ -146,7 +135,22 @@ class _LoginPageState extends State<LoginPage> {
     );
   }
 
-  Padding PhoneVersion(BuildContext context) {
+  AppBar topBar() {
+    return AppBar(
+      title: const Text(
+        "Plus Scholar Cameron",
+        style: TextStyle(color: Colors.black, fontWeight: FontWeight.bold),
+      ),
+      backgroundColor: Colors.white,
+      leadingWidth: 60,
+      leading: Padding(
+        padding: const EdgeInsets.only(left: 20.0),
+        child: Image.asset('assets/images/cameron_logo2.png'),
+      ),
+    );
+  }
+
+  Padding phoneVersion(BuildContext context) {
     return Padding(
       padding: const EdgeInsets.all(30),
       child: Form(
