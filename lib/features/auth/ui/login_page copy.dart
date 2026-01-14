@@ -1,345 +1,347 @@
-import 'package:flutter/material.dart';
-import '../../../core/network/api_client.dart';
-import '../api/auth_api.dart';
-import '../../dashboard/home_page.dart';
-import 'package:flutter_svg/flutter_svg.dart';
+// old style based on Kobe's Design
 
-class LoginPage extends StatefulWidget {
-  const LoginPage({super.key});
+// import 'package:flutter/material.dart';
+// import '../../../core/network/api_client.dart';
+// import '../api/auth_api.dart';
+// import '../../dashboard/home_page.dart';
+// import 'package:flutter_svg/flutter_svg.dart';
 
-  @override
-  State<LoginPage> createState() => _LoginPageState();
-}
+// class LoginPage extends StatefulWidget {
+//   const LoginPage({super.key});
 
-class _LoginPageState extends State<LoginPage> {
-  final _emailCtrl = TextEditingController();
-  final _passCtrl = TextEditingController();
-  final _formKey = GlobalKey<FormState>();
+//   @override
+//   State<LoginPage> createState() => _LoginPageState();
+// }
 
-  bool _loading = false;
-  String? _error;
-  String? _tokenPreview;
+// class _LoginPageState extends State<LoginPage> {
+//   final _emailCtrl = TextEditingController();
+//   final _passCtrl = TextEditingController();
+//   final _formKey = GlobalKey<FormState>();
 
-  late final AuthApi _authApi;
+//   bool _loading = false;
+//   String? _error;
+//   String? _tokenPreview;
 
-  @override
-  void initState() {
-    super.initState();
-    _authApi = AuthApi(ApiClient());
-  }
+//   late final AuthApi _authApi;
 
-  @override
-  void dispose() {
-    _emailCtrl.dispose();
-    _passCtrl.dispose();
-    super.dispose();
-  }
+//   @override
+//   void initState() {
+//     super.initState();
+//     _authApi = AuthApi(ApiClient());
+//   }
 
-  Future<void> _onLogin() async {
-    setState(() {
-      _error = null;
-      _tokenPreview = null;
-    });
+//   @override
+//   void dispose() {
+//     _emailCtrl.dispose();
+//     _passCtrl.dispose();
+//     super.dispose();
+//   }
 
-    if (!_formKey.currentState!.validate()) return;
+//   Future<void> _onLogin() async {
+//     setState(() {
+//       _error = null;
+//       _tokenPreview = null;
+//     });
 
-    setState(() => _loading = true);
-    try {
-      final res = await _authApi.login(
-        email: _emailCtrl.text.trim(),
-        password: _passCtrl.text,
-      );
+//     if (!_formKey.currentState!.validate()) return;
 
-      final user = res["user"] as Map<String, dynamic>?;
-      final email = (user?["email"] ?? _emailCtrl.text.trim()).toString();
+//     setState(() => _loading = true);
+//     try {
+//       final res = await _authApi.login(
+//         email: _emailCtrl.text.trim(),
+//         password: _passCtrl.text,
+//       );
 
-      if (!mounted) return;
+//       final user = res["user"] as Map<String, dynamic>?;
+//       final email = (user?["email"] ?? _emailCtrl.text.trim()).toString();
 
-      // popup
-      await showDialog(
-        context: context,
-        builder: (_) => AlertDialog(
-          title: const Text("Success"),
-          content: const Text("Login successful!"),
-          actions: [
-            TextButton(
-              onPressed: () => Navigator.pop(context),
-              child: const Text("OK"),
-            ),
-          ],
-        ),
-      );
+//       if (!mounted) return;
 
-      // navigate
-      if (!mounted) return;
-      Navigator.pushReplacement(
-        context,
-        MaterialPageRoute(builder: (_) => HomePage(email: email)),
-      );
+//       // popup
+//       await showDialog(
+//         context: context,
+//         builder: (_) => AlertDialog(
+//           title: const Text("Success"),
+//           content: const Text("Login successful!"),
+//           actions: [
+//             TextButton(
+//               onPressed: () => Navigator.pop(context),
+//               child: const Text("OK"),
+//             ),
+//           ],
+//         ),
+//       );
 
-      final token = (res["token"] ?? "").toString();
-      setState(() {
-        _tokenPreview = token.isEmpty
-            ? "(no token returned)"
-            : "${token.substring(0, token.length > 25 ? 25 : token.length)}...";
-      });
-    } catch (e) {
-      setState(() => _error = e.toString().replaceFirst("Exception: ", ""));
-    } finally {
-      setState(() => _loading = false);
-    }
-  }
+//       // navigate
+//       if (!mounted) return;
+//       Navigator.pushReplacement(
+//         context,
+//         MaterialPageRoute(builder: (_) => HomePage(email: email)),
+//       );
 
-  @override
-  Widget build(BuildContext context) {
-    return Scaffold(
-      appBar: AppBar(
-        title: const Text(
-          "Plus Scholar Cameron",
-          style: TextStyle(color: Colors.black, fontWeight: FontWeight.bold),
-        ),
-        backgroundColor: Colors.white,
-        leading: Padding(
-          padding: const EdgeInsets.only(left: 20.0),
-          child: 
-          Image.asset('assets/images/cameron_logo2.png'),
-          // SvgPicture.asset('assets/images/cameron_logo2_embedded.svg'),
-        ),
-      ),
-      backgroundColor: Colors.white,
-      body: Center(
-        child: ConstrainedBox(
-          constraints: const BoxConstraints(maxWidth: 500),
-          child: Padding(
-            padding: const EdgeInsets.all(30),
-            child: Form(
-              key: _formKey,
-              child: Column(
-                mainAxisSize: MainAxisSize.min,
-                children: [
-                  const SizedBox(height: 0),
-                  const Text(
-                    "Login",
-                    style: TextStyle(fontSize: 32, fontWeight: FontWeight.bold),
-                  ),
-                  const SizedBox(height: 80),
+//       final token = (res["token"] ?? "").toString();
+//       setState(() {
+//         _tokenPreview = token.isEmpty
+//             ? "(no token returned)"
+//             : "${token.substring(0, token.length > 25 ? 25 : token.length)}...";
+//       });
+//     } catch (e) {
+//       setState(() => _error = e.toString().replaceFirst("Exception: ", ""));
+//     } finally {
+//       setState(() => _loading = false);
+//     }
+//   }
 
-                  Column(
-                    crossAxisAlignment: CrossAxisAlignment.start,
-                    children: [
-                      const Text(
-                        "Cameron Email",
-                        style: TextStyle(fontSize: 16),
-                      ),
-                      const SizedBox(height: 10),
-                      TextFormField(
-                        controller: _emailCtrl,
-                        keyboardType: TextInputType.emailAddress,
-                        validator: (v) {
-                          final s = (v ?? "").trim();
-                          if (s.isEmpty) return "Email is required";
-                          if (!s.contains("@")) return "Enter a valid email";
-                          return null;
-                        },
-                        style: const TextStyle(color: Colors.black),
-                        decoration: InputDecoration(
-                          hintText: "name@cameron.edu",
+//   @override
+//   Widget build(BuildContext context) {
+//     return Scaffold(
+//       appBar: AppBar(
+//         title: const Text(
+//           "Plus Scholar Cameron",
+//           style: TextStyle(color: Colors.black, fontWeight: FontWeight.bold),
+//         ),
+//         backgroundColor: Colors.white,
+//         leading: Padding(
+//           padding: const EdgeInsets.only(left: 20.0),
+//           child: 
+//           Image.asset('assets/images/cameron_logo2.png'),
+//           // SvgPicture.asset('assets/images/cameron_logo2_embedded.svg'),
+//         ),
+//       ),
+//       backgroundColor: Colors.white,
+//       body: Center(
+//         child: ConstrainedBox(
+//           constraints: const BoxConstraints(maxWidth: 500),
+//           child: Padding(
+//             padding: const EdgeInsets.all(30),
+//             child: Form(
+//               key: _formKey,
+//               child: Column(
+//                 mainAxisSize: MainAxisSize.min,
+//                 children: [
+//                   const SizedBox(height: 0),
+//                   const Text(
+//                     "Login",
+//                     style: TextStyle(fontSize: 32, fontWeight: FontWeight.bold),
+//                   ),
+//                   const SizedBox(height: 80),
 
-                          filled: true,
-                          fillColor: Color(0xFFF5F5F5),
+//                   Column(
+//                     crossAxisAlignment: CrossAxisAlignment.start,
+//                     children: [
+//                       const Text(
+//                         "Cameron Email",
+//                         style: TextStyle(fontSize: 16),
+//                       ),
+//                       const SizedBox(height: 10),
+//                       TextFormField(
+//                         controller: _emailCtrl,
+//                         keyboardType: TextInputType.emailAddress,
+//                         validator: (v) {
+//                           final s = (v ?? "").trim();
+//                           if (s.isEmpty) return "Email is required";
+//                           if (!s.contains("@")) return "Enter a valid email";
+//                           return null;
+//                         },
+//                         style: const TextStyle(color: Colors.black),
+//                         decoration: InputDecoration(
+//                           hintText: "name@cameron.edu",
 
-                          border: OutlineInputBorder(
-                            borderRadius: BorderRadius.circular(8),
-                            borderSide: const BorderSide(color: Colors.grey),
-                          ),
+//                           filled: true,
+//                           fillColor: Color(0xFFF5F5F5),
 
-                          enabledBorder: OutlineInputBorder(
-                            borderRadius: BorderRadius.circular(8),
-                            borderSide: const BorderSide(color: Colors.grey),
-                          ),
+//                           border: OutlineInputBorder(
+//                             borderRadius: BorderRadius.circular(8),
+//                             borderSide: const BorderSide(color: Colors.grey),
+//                           ),
 
-                          focusedBorder: OutlineInputBorder(
-                            borderRadius: BorderRadius.circular(8),
-                            borderSide: const BorderSide(
-                              color: Colors.black,
-                              width: 1.5,
-                            ),
-                          ),
+//                           enabledBorder: OutlineInputBorder(
+//                             borderRadius: BorderRadius.circular(8),
+//                             borderSide: const BorderSide(color: Colors.grey),
+//                           ),
 
-                          errorBorder: OutlineInputBorder(
-                            borderRadius: BorderRadius.circular(8),
-                            borderSide: const BorderSide(color: Colors.red),
-                          ),
+//                           focusedBorder: OutlineInputBorder(
+//                             borderRadius: BorderRadius.circular(8),
+//                             borderSide: const BorderSide(
+//                               color: Colors.black,
+//                               width: 1.5,
+//                             ),
+//                           ),
 
-                          focusedErrorBorder: OutlineInputBorder(
-                            borderRadius: BorderRadius.circular(8),
-                            borderSide: const BorderSide(
-                              color: Colors.red,
-                              width: 1.5,
-                            ),
-                          ),
-                        ),
-                      ),
-                    ],
-                  ),
+//                           errorBorder: OutlineInputBorder(
+//                             borderRadius: BorderRadius.circular(8),
+//                             borderSide: const BorderSide(color: Colors.red),
+//                           ),
 
-                  const SizedBox(height: 34),
+//                           focusedErrorBorder: OutlineInputBorder(
+//                             borderRadius: BorderRadius.circular(8),
+//                             borderSide: const BorderSide(
+//                               color: Colors.red,
+//                               width: 1.5,
+//                             ),
+//                           ),
+//                         ),
+//                       ),
+//                     ],
+//                   ),
 
-                  Column(
-                    crossAxisAlignment: CrossAxisAlignment.start,
-                    children: [
-                      const Text("Password", style: TextStyle(fontSize: 16)),
-                      const SizedBox(height: 10),
-                      TextFormField(
-                        controller: _passCtrl,
-                        obscureText: true,
-                        validator: (v) {
-                          if ((v ?? "").isEmpty) return "Password is required";
-                          if ((v ?? "").length < 6) return "Min 6 characters";
-                          return null;
-                        },
-                        style: const TextStyle(color: Colors.black),
-                        decoration: InputDecoration(
-                          hintText: "*********",
+//                   const SizedBox(height: 34),
 
-                          filled: true,
-                          fillColor: Color(0xFFF5F5F5),
+//                   Column(
+//                     crossAxisAlignment: CrossAxisAlignment.start,
+//                     children: [
+//                       const Text("Password", style: TextStyle(fontSize: 16)),
+//                       const SizedBox(height: 10),
+//                       TextFormField(
+//                         controller: _passCtrl,
+//                         obscureText: true,
+//                         validator: (v) {
+//                           if ((v ?? "").isEmpty) return "Password is required";
+//                           if ((v ?? "").length < 6) return "Min 6 characters";
+//                           return null;
+//                         },
+//                         style: const TextStyle(color: Colors.black),
+//                         decoration: InputDecoration(
+//                           hintText: "*********",
 
-                          border: OutlineInputBorder(
-                            borderRadius: BorderRadius.circular(8),
-                            borderSide: const BorderSide(color: Colors.grey),
-                          ),
+//                           filled: true,
+//                           fillColor: Color(0xFFF5F5F5),
 
-                          enabledBorder: OutlineInputBorder(
-                            borderRadius: BorderRadius.circular(8),
-                            borderSide: const BorderSide(color: Colors.grey),
-                          ),
+//                           border: OutlineInputBorder(
+//                             borderRadius: BorderRadius.circular(8),
+//                             borderSide: const BorderSide(color: Colors.grey),
+//                           ),
 
-                          focusedBorder: OutlineInputBorder(
-                            borderRadius: BorderRadius.circular(8),
-                            borderSide: const BorderSide(
-                              color: Colors.black,
-                              width: 1.5,
-                            ),
-                          ),
+//                           enabledBorder: OutlineInputBorder(
+//                             borderRadius: BorderRadius.circular(8),
+//                             borderSide: const BorderSide(color: Colors.grey),
+//                           ),
 
-                          errorBorder: OutlineInputBorder(
-                            borderRadius: BorderRadius.circular(8),
-                            borderSide: const BorderSide(color: Colors.red),
-                          ),
+//                           focusedBorder: OutlineInputBorder(
+//                             borderRadius: BorderRadius.circular(8),
+//                             borderSide: const BorderSide(
+//                               color: Colors.black,
+//                               width: 1.5,
+//                             ),
+//                           ),
 
-                          focusedErrorBorder: OutlineInputBorder(
-                            borderRadius: BorderRadius.circular(8),
-                            borderSide: const BorderSide(
-                              color: Colors.red,
-                              width: 1.5,
-                            ),
-                          ),
-                        ),
-                      ),
-                    ],
-                  ),
+//                           errorBorder: OutlineInputBorder(
+//                             borderRadius: BorderRadius.circular(8),
+//                             borderSide: const BorderSide(color: Colors.red),
+//                           ),
 
-                  if (_error != null) ...[
-                    Text(_error!, style: const TextStyle(color: Colors.red)),
-                    const SizedBox(height: 12),
-                  ],
+//                           focusedErrorBorder: OutlineInputBorder(
+//                             borderRadius: BorderRadius.circular(8),
+//                             borderSide: const BorderSide(
+//                               color: Colors.red,
+//                               width: 1.5,
+//                             ),
+//                           ),
+//                         ),
+//                       ),
+//                     ],
+//                   ),
 
-                  const SizedBox(height: 10),
+//                   if (_error != null) ...[
+//                     Text(_error!, style: const TextStyle(color: Colors.red)),
+//                     const SizedBox(height: 12),
+//                   ],
 
-                  Row(
-                    mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                    children: [
-                      Row(
-                        children: [
-                          const Text(
-                            "Remember me",
-                            style: TextStyle(
-                              fontSize: 16,
-                              fontWeight: FontWeight.normal,
-                              color: Colors.black,
-                            ),
-                          ),
-                          Checkbox(
-                            value: true,
-                            onChanged: (v) {},
-                            activeColor: Colors.grey.shade300,
-                          ),
-                        ],
-                      ),
+//                   const SizedBox(height: 10),
 
-                      const Text(
-                        "Forgot password",
-                        style: TextStyle(
-                          fontSize: 16,
-                          fontWeight: FontWeight.normal,
-                          color: Colors.black,
-                        ),
-                      ),
-                    ],
-                  ),
+//                   Row(
+//                     mainAxisAlignment: MainAxisAlignment.spaceBetween,
+//                     children: [
+//                       Row(
+//                         children: [
+//                           const Text(
+//                             "Remember me",
+//                             style: TextStyle(
+//                               fontSize: 16,
+//                               fontWeight: FontWeight.normal,
+//                               color: Colors.black,
+//                             ),
+//                           ),
+//                           Checkbox(
+//                             value: true,
+//                             onChanged: (v) {},
+//                             activeColor: Colors.grey.shade300,
+//                           ),
+//                         ],
+//                       ),
 
-                  const SizedBox(height: 50),
+//                       const Text(
+//                         "Forgot password",
+//                         style: TextStyle(
+//                           fontSize: 16,
+//                           fontWeight: FontWeight.normal,
+//                           color: Colors.black,
+//                         ),
+//                       ),
+//                     ],
+//                   ),
 
-                  SizedBox(
-                    width: double.infinity,
-                    child: Column(
-                      mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                      children: [
-                        ElevatedButton(
-                          onPressed: _loading ? null : _onLogin,
-                          // ignore: sort_child_properties_last
-                          child: Text(
-                            _loading ? "Signing in..." : "Sign in",
-                            style: const TextStyle(
-                              color: Colors.white,
-                              fontWeight: FontWeight.normal,
-                              fontSize: 24,
-                            ),
-                          ),
-                          style: ElevatedButton.styleFrom(
-                            backgroundColor: Color(0xFFFFC425),
-                            shape: RoundedRectangleBorder(
-                              borderRadius: BorderRadius.circular(10),
-                            ),
-                            elevation: 3, // shadow
-                            padding: const EdgeInsets.symmetric(
-                              vertical: 22,
-                              horizontal: 60,
-                            ),
-                          ),
-                        ),
+//                   const SizedBox(height: 50),
 
-                        const SizedBox(height: 14),
+//                   SizedBox(
+//                     width: double.infinity,
+//                     child: Column(
+//                       mainAxisAlignment: MainAxisAlignment.spaceBetween,
+//                       children: [
+//                         ElevatedButton(
+//                           onPressed: _loading ? null : _onLogin,
+//                           // ignore: sort_child_properties_last
+//                           child: Text(
+//                             _loading ? "Signing in..." : "Sign in",
+//                             style: const TextStyle(
+//                               color: Colors.white,
+//                               fontWeight: FontWeight.normal,
+//                               fontSize: 24,
+//                             ),
+//                           ),
+//                           style: ElevatedButton.styleFrom(
+//                             backgroundColor: Color(0xFFFFC425),
+//                             shape: RoundedRectangleBorder(
+//                               borderRadius: BorderRadius.circular(10),
+//                             ),
+//                             elevation: 3, // shadow
+//                             padding: const EdgeInsets.symmetric(
+//                               vertical: 22,
+//                               horizontal: 60,
+//                             ),
+//                           ),
+//                         ),
 
-                        TextButton(
-                          onPressed: () => null,
-                          child: const Text(
-                            'Back',
-                            style: TextStyle(
-                              fontSize: 16,
-                              fontWeight: FontWeight.normal,
-                            ),
-                          ),
-                          style: TextButton.styleFrom(
-                            foregroundColor: Colors.black,
-                            backgroundColor: Color.fromARGB(255, 255, 255, 255),
-                          ),
-                        ),
-                      ],
-                    ),
-                  ),
+//                         const SizedBox(height: 14),
 
-                  if (_tokenPreview != null) ...[
-                    const SizedBox(height: 12),
-                    Text("Token: $_tokenPreview"),
-                  ],
-                ],
-              ),
-            ),
-          ),
-        ),
-      ),
-    );
-  }
-}
+//                         TextButton(
+//                           onPressed: () => null,
+//                           child: const Text(
+//                             'Back',
+//                             style: TextStyle(
+//                               fontSize: 16,
+//                               fontWeight: FontWeight.normal,
+//                             ),
+//                           ),
+//                           style: TextButton.styleFrom(
+//                             foregroundColor: Colors.black,
+//                             backgroundColor: Color.fromARGB(255, 255, 255, 255),
+//                           ),
+//                         ),
+//                       ],
+//                     ),
+//                   ),
+
+//                   if (_tokenPreview != null) ...[
+//                     const SizedBox(height: 12),
+//                     Text("Token: $_tokenPreview"),
+//                   ],
+//                 ],
+//               ),
+//             ),
+//           ),
+//         ),
+//       ),
+//     );
+//   }
+// }
