@@ -241,11 +241,11 @@ class _LoginPageState extends State<LoginPage> {
                     TextFormField(
                       controller: _passCtrl,
                       obscureText: true,
-                      validator: (v) {
-                        if ((v ?? "").isEmpty) return "Password is required";
-                        if ((v ?? "").length < 6) return "Min 6 characters";
-                        return null;
-                      },
+                      // validator: (v) {
+                      //   if ((v ?? "").isEmpty) return "Password is required";
+                      //   if ((v ?? "").length < 6) return "Min 6 characters";
+                      //   return null;
+                      // },
                       style: const TextStyle(color: Colors.black),
                       decoration: InputDecoration(
                         hintText: "••••••••••",
