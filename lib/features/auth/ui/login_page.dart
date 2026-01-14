@@ -155,257 +155,268 @@ class _LoginPageState extends State<LoginPage> {
       padding: const EdgeInsets.all(30),
       child: Form(
         key: _formKey,
-        child: Column(
-          crossAxisAlignment: CrossAxisAlignment.stretch,
-
-          // Top Input fields
-          children: [
-            const SizedBox(height: 10),
-            Column(
-              crossAxisAlignment: CrossAxisAlignment.start,
-              children: [
-                Column(
-                  crossAxisAlignment: CrossAxisAlignment.start,
-                  children: [
-                    const Text(
-                      "School Email",
-                      style: TextStyle(fontSize: 16, color: Color(0xFF111928)),
-                    ),
-                    const SizedBox(height: 10),
-                    TextFormField(
-                      controller: _emailCtrl,
-                      keyboardType: TextInputType.emailAddress,
-                      validator: (v) {
-                        final s = (v ?? "").trim();
-                        if (s.isEmpty) return "Email is required";
-                        if (!s.contains("@")) return "Enter a valid email";
-                        return null;
-                      },
-                      style: const TextStyle(color: Colors.black),
-                      decoration: InputDecoration(
-                        hintText: "name@cameron.edu",
-                        hintStyle: const TextStyle(color: Color(0xFF6B7280)),
-
-                        filled: true,
-                        fillColor: Color(0xFFF9FAFB),
-
-                        border: OutlineInputBorder(
-                          borderRadius: BorderRadius.circular(8),
-                          borderSide: const BorderSide(
-                            color: Color(0xFFD1D5DB),
+        child: LayoutBuilder(
+          builder: (context, constraints) {
+            return SingleChildScrollView(
+              child: ConstrainedBox(
+                constraints: BoxConstraints(minHeight: constraints.maxHeight),
+                child: IntrinsicHeight(
+                  child: Column(
+                    crossAxisAlignment: CrossAxisAlignment.stretch,
+                  
+                    // Top Input fields
+                    children: [
+                      const SizedBox(height: 10),
+                      Column(
+                        crossAxisAlignment: CrossAxisAlignment.start,
+                        children: [
+                          Column(
+                            crossAxisAlignment: CrossAxisAlignment.start,
+                            children: [
+                              const Text(
+                                "School Email",
+                                style: TextStyle(fontSize: 16, color: Color(0xFF111928)),
+                              ),
+                              const SizedBox(height: 10),
+                              TextFormField(
+                                controller: _emailCtrl,
+                                keyboardType: TextInputType.emailAddress,
+                                validator: (v) {
+                                  final s = (v ?? "").trim();
+                                  if (s.isEmpty) return "Email is required";
+                                  if (!s.contains("@")) return "Enter a valid email";
+                                  return null;
+                                },
+                                style: const TextStyle(color: Colors.black),
+                                decoration: InputDecoration(
+                                  hintText: "name@cameron.edu",
+                                  hintStyle: const TextStyle(color: Color(0xFF6B7280)),
+                  
+                                  filled: true,
+                                  fillColor: Color(0xFFF9FAFB),
+                  
+                                  border: OutlineInputBorder(
+                                    borderRadius: BorderRadius.circular(8),
+                                    borderSide: const BorderSide(
+                                      color: Color(0xFFD1D5DB),
+                                    ),
+                                  ),
+                  
+                                  enabledBorder: OutlineInputBorder(
+                                    borderRadius: BorderRadius.circular(8),
+                                    borderSide: const BorderSide(
+                                      color: Color(0xFFD1D5DB),
+                                    ),
+                                  ),
+                  
+                                  focusedBorder: OutlineInputBorder(
+                                    borderRadius: BorderRadius.circular(8),
+                                    borderSide: const BorderSide(
+                                      color: Colors.black,
+                                      width: 1.5,
+                                    ),
+                                  ),
+                  
+                                  errorBorder: OutlineInputBorder(
+                                    borderRadius: BorderRadius.circular(8),
+                                    borderSide: const BorderSide(color: Colors.red),
+                                  ),
+                  
+                                  focusedErrorBorder: OutlineInputBorder(
+                                    borderRadius: BorderRadius.circular(8),
+                                    borderSide: const BorderSide(
+                                      color: Colors.red,
+                                      width: 1.5,
+                                    ),
+                                  ),
+                                ),
+                              ),
+                            ],
                           ),
-                        ),
-
-                        enabledBorder: OutlineInputBorder(
-                          borderRadius: BorderRadius.circular(8),
-                          borderSide: const BorderSide(
-                            color: Color(0xFFD1D5DB),
+                  
+                          const SizedBox(height: 34),
+                  
+                          Column(
+                            crossAxisAlignment: CrossAxisAlignment.start,
+                            children: [
+                              const Text(
+                                "Password",
+                                style: TextStyle(fontSize: 16, color: Color(0xFF111928)),
+                              ),
+                              const SizedBox(height: 10),
+                              TextFormField(
+                                controller: _passCtrl,
+                                obscureText: true,
+                                validator: (v) {
+                                  if ((v ?? "").isEmpty) return "Password is required";
+                                  if ((v ?? "").length < 6) return "Min 6 characters";
+                                  return null;
+                                },
+                                style: const TextStyle(color: Colors.black),
+                                decoration: InputDecoration(
+                                  hintText: "••••••••••",
+                                  hintStyle: const TextStyle(color: Color(0xFF6B7280)),
+                  
+                                  filled: true,
+                                  fillColor: Color(0xFFF9FAFB),
+                  
+                                  border: OutlineInputBorder(
+                                    borderRadius: BorderRadius.circular(8),
+                                    borderSide: const BorderSide(
+                                      color: Color(0xFFD1D5DB),
+                                    ),
+                                  ),
+                  
+                                  enabledBorder: OutlineInputBorder(
+                                    borderRadius: BorderRadius.circular(8),
+                                    borderSide: const BorderSide(
+                                      color: Color(0xFFD1D5DB),
+                                    ),
+                                  ),
+                  
+                                  focusedBorder: OutlineInputBorder(
+                                    borderRadius: BorderRadius.circular(8),
+                                    borderSide: const BorderSide(
+                                      color: Colors.black,
+                                      width: 1.5,
+                                    ),
+                                  ),
+                  
+                                  errorBorder: OutlineInputBorder(
+                                    borderRadius: BorderRadius.circular(8),
+                                    borderSide: const BorderSide(color: Colors.red),
+                                  ),
+                  
+                                  focusedErrorBorder: OutlineInputBorder(
+                                    borderRadius: BorderRadius.circular(8),
+                                    borderSide: const BorderSide(
+                                      color: Colors.red,
+                                      width: 1.5,
+                                    ),
+                                  ),
+                                ),
+                              ),
+                            ],
                           ),
-                        ),
-
-                        focusedBorder: OutlineInputBorder(
-                          borderRadius: BorderRadius.circular(8),
-                          borderSide: const BorderSide(
-                            color: Colors.black,
-                            width: 1.5,
+                  
+                          if (_error != null) ...[
+                            Text(_error!, style: const TextStyle(color: Colors.red)),
+                            const SizedBox(height: 12),
+                          ],
+                  
+                          const SizedBox(height: 20),
+                  
+                          Row(
+                            mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                            children: [
+                              Row(
+                                children: [
+                                  const Text(
+                                    "Remember me",
+                                    style: TextStyle(
+                                      fontSize: 16,
+                                      fontWeight: FontWeight.normal,
+                                      color: Color(0xFF787878),
+                                    ),
+                                  ),
+                                  Checkbox(
+                                    value: _rememberMe,
+                                    onChanged: (value) {
+                                      setState(() {
+                                        _rememberMe = value ?? false;
+                                      });
+                                    },
+                                    activeColor: Color(0xFFD9D9D9),
+                                    fillColor: WidgetStateProperty.resolveWith<Color>((
+                                      states,
+                                    ) {
+                                      return const Color(0xFFD9D9D9); // same color always
+                                    }),
+                                    side: const BorderSide(
+                                      color: Color(0xFFD9D9D9),
+                                      width: 2,
+                                    ),
+                                    checkColor: Colors.blueGrey,
+                                  ),
+                                ],
+                              ),
+                  
+                              const Text(
+                                "Forgot password?",
+                                style: TextStyle(
+                                  fontSize: 16,
+                                  fontWeight: FontWeight.normal,
+                                  color: Color(0xFF787878),
+                                ),
+                              ),
+                            ],
                           ),
-                        ),
-
-                        errorBorder: OutlineInputBorder(
-                          borderRadius: BorderRadius.circular(8),
-                          borderSide: const BorderSide(color: Colors.red),
-                        ),
-
-                        focusedErrorBorder: OutlineInputBorder(
-                          borderRadius: BorderRadius.circular(8),
-                          borderSide: const BorderSide(
-                            color: Colors.red,
-                            width: 1.5,
-                          ),
-                        ),
+                        ],
                       ),
-                    ),
-                  ],
-                ),
-
-                const SizedBox(height: 34),
-
-                Column(
-                  crossAxisAlignment: CrossAxisAlignment.start,
-                  children: [
-                    const Text(
-                      "Password",
-                      style: TextStyle(fontSize: 16, color: Color(0xFF111928)),
-                    ),
-                    const SizedBox(height: 10),
-                    TextFormField(
-                      controller: _passCtrl,
-                      obscureText: true,
-                      validator: (v) {
-                        if ((v ?? "").isEmpty) return "Password is required";
-                        if ((v ?? "").length < 6) return "Min 6 characters";
-                        return null;
-                      },
-                      style: const TextStyle(color: Colors.black),
-                      decoration: InputDecoration(
-                        hintText: "••••••••••",
-                        hintStyle: const TextStyle(color: Color(0xFF6B7280)),
-
-                        filled: true,
-                        fillColor: Color(0xFFF9FAFB),
-
-                        border: OutlineInputBorder(
-                          borderRadius: BorderRadius.circular(8),
-                          borderSide: const BorderSide(
-                            color: Color(0xFFD1D5DB),
+                      const Spacer(),
+                  
+                      // Bottom buttons
+                      Row(
+                        mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                        children: [
+                          SizedBox(
+                            width: 150,
+                            child: ElevatedButton(
+                              onPressed: () => Navigator.pop(context),
+                              style:
+                                  ElevatedButton.styleFrom(
+                                    backgroundColor: Color.fromARGB(255, 255, 255, 255),
+                                    shape: RoundedRectangleBorder(
+                                      borderRadius: BorderRadius.circular(9),
+                                    ),
+                                    elevation: 1, // shadow
+                                    padding: const EdgeInsets.symmetric(vertical: 22),
+                                  ).copyWith(
+                                    overlayColor: WidgetStateProperty.all(
+                                      Colors.transparent,
+                                    ),
+                                  ),
+                              child: const Text(
+                                'Back',
+                                style: TextStyle(
+                                  fontSize: 15,
+                                  color: Colors.black,
+                                  fontWeight: FontWeight.normal,
+                                ),
+                              ),
+                            ),
                           ),
-                        ),
-
-                        enabledBorder: OutlineInputBorder(
-                          borderRadius: BorderRadius.circular(8),
-                          borderSide: const BorderSide(
-                            color: Color(0xFFD1D5DB),
+                  
+                          SizedBox(
+                            width: 150,
+                            child: ElevatedButton(
+                              onPressed: _loading ? null : _onLogin,
+                              style: ElevatedButton.styleFrom(
+                                backgroundColor: Color(0xFFFFC425),
+                                shape: RoundedRectangleBorder(
+                                  borderRadius: BorderRadius.circular(9),
+                                ),
+                                elevation: 2, // shadow
+                                padding: const EdgeInsets.symmetric(vertical: 22),
+                              ),
+                              child: Text(
+                                _loading ? "Signing in..." : "Sign in",
+                                style: const TextStyle(
+                                  color: Colors.black,
+                                  fontWeight: FontWeight.normal,
+                                  fontSize: 15,
+                                ),
+                              ),
+                            ),
                           ),
-                        ),
-
-                        focusedBorder: OutlineInputBorder(
-                          borderRadius: BorderRadius.circular(8),
-                          borderSide: const BorderSide(
-                            color: Colors.black,
-                            width: 1.5,
-                          ),
-                        ),
-
-                        errorBorder: OutlineInputBorder(
-                          borderRadius: BorderRadius.circular(8),
-                          borderSide: const BorderSide(color: Colors.red),
-                        ),
-
-                        focusedErrorBorder: OutlineInputBorder(
-                          borderRadius: BorderRadius.circular(8),
-                          borderSide: const BorderSide(
-                            color: Colors.red,
-                            width: 1.5,
-                          ),
-                        ),
+                        ],
                       ),
-                    ),
-                  ],
-                ),
-
-                if (_error != null) ...[
-                  Text(_error!, style: const TextStyle(color: Colors.red)),
-                  const SizedBox(height: 12),
-                ],
-
-                const SizedBox(height: 20),
-
-                Row(
-                  mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                  children: [
-                    Row(
-                      children: [
-                        const Text(
-                          "Remember me",
-                          style: TextStyle(
-                            fontSize: 16,
-                            fontWeight: FontWeight.normal,
-                            color: Color(0xFF787878),
-                          ),
-                        ),
-                        Checkbox(
-                          value: _rememberMe,
-                          onChanged: (value) {
-                            setState(() {
-                              _rememberMe = value ?? false;
-                            });
-                          },
-                          activeColor: Color(0xFFD9D9D9),
-                          fillColor: WidgetStateProperty.resolveWith<Color>((
-                            states,
-                          ) {
-                            return const Color(0xFFD9D9D9); // same color always
-                          }),
-                          side: const BorderSide(
-                            color: Color(0xFFD9D9D9),
-                            width: 2,
-                          ),
-                          checkColor: Colors.blueGrey,
-                        ),
-                      ],
-                    ),
-
-                    const Text(
-                      "Forgot password?",
-                      style: TextStyle(
-                        fontSize: 16,
-                        fontWeight: FontWeight.normal,
-                        color: Color(0xFF787878),
-                      ),
-                    ),
-                  ],
-                ),
-              ],
-            ),
-            const Spacer(),
-
-            // Bottom buttons
-            Row(
-              mainAxisAlignment: MainAxisAlignment.spaceBetween,
-              children: [
-                SizedBox(
-                  width: 150,
-                  child: ElevatedButton(
-                    onPressed: () => Navigator.pop(context),
-                    style:
-                        ElevatedButton.styleFrom(
-                          backgroundColor: Color.fromARGB(255, 255, 255, 255),
-                          shape: RoundedRectangleBorder(
-                            borderRadius: BorderRadius.circular(9),
-                          ),
-                          elevation: 1, // shadow
-                          padding: const EdgeInsets.symmetric(vertical: 22),
-                        ).copyWith(
-                          overlayColor: WidgetStateProperty.all(
-                            Colors.transparent,
-                          ),
-                        ),
-                    child: const Text(
-                      'Back',
-                      style: TextStyle(
-                        fontSize: 15,
-                        color: Colors.black,
-                        fontWeight: FontWeight.normal,
-                      ),
-                    ),
+                    ],
                   ),
                 ),
-
-                SizedBox(
-                  width: 150,
-                  child: ElevatedButton(
-                    onPressed: _loading ? null : _onLogin,
-                    style: ElevatedButton.styleFrom(
-                      backgroundColor: Color(0xFFFFC425),
-                      shape: RoundedRectangleBorder(
-                        borderRadius: BorderRadius.circular(9),
-                      ),
-                      elevation: 2, // shadow
-                      padding: const EdgeInsets.symmetric(vertical: 22),
-                    ),
-                    child: Text(
-                      _loading ? "Signing in..." : "Sign in",
-                      style: const TextStyle(
-                        color: Colors.black,
-                        fontWeight: FontWeight.normal,
-                        fontSize: 15,
-                      ),
-                    ),
-                  ),
-                ),
-              ],
-            ),
-          ],
+              ),
+            );
+          }
         ),
       ),
     );
