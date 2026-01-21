@@ -3,6 +3,7 @@ import 'package:flutter/material.dart';
 import '../../../core/network/api_client.dart';
 import '../api/auth_api.dart';
 import '../../dashboard/home_page.dart';
+import '../../auth/ui/auth_page.dart';
 import './first_page.dart';
 import 'package:flutter_svg/flutter_svg.dart';
 
@@ -241,11 +242,11 @@ class _LoginPageState extends State<LoginPage> {
                     TextFormField(
                       controller: _passCtrl,
                       obscureText: true,
-                      // validator: (v) {
-                      //   if ((v ?? "").isEmpty) return "Password is required";
-                      //   if ((v ?? "").length < 6) return "Min 6 characters";
-                      //   return null;
-                      // },
+                      validator: (v) {
+                        if ((v ?? "").isEmpty) return "Password is required";
+                        if ((v ?? "").length < 6) return "Min 6 characters";
+                        return null;
+                      },
                       style: const TextStyle(color: Colors.black),
                       decoration: InputDecoration(
                         hintText: "••••••••••",
@@ -384,7 +385,13 @@ class _LoginPageState extends State<LoginPage> {
                 SizedBox(
                   width: 150,
                   child: ElevatedButton(
-                    onPressed: _loading ? null : _onLogin,
+                    onPressed: _loading ? null
+                    : () {
+                      Navigator.push(
+                        context,
+                        MaterialPageRoute(builder: (context) => AuthPage()),
+                      );
+                    },
                     style: ElevatedButton.styleFrom(
                       backgroundColor: Color(0xFFFFC425),
                       shape: RoundedRectangleBorder(
