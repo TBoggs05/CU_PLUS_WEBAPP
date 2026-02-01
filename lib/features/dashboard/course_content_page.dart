@@ -41,8 +41,8 @@ class _CourseContentState extends State<CourseContentPage> {
 
         return Scaffold(
           appBar: AppBar(
+            automaticallyImplyLeading: false,
             title: const Text("Dashboard"),
-            // hide hamburger on desktop
             leading: isDesktop
                 ? null
                 : IconButton(
