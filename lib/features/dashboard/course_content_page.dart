@@ -65,7 +65,7 @@ class _CourseContentState extends State<CourseContentPage> {
                         },
                       ),
                     ),
-                    const VerticalDivider(width: 1, thickness: 1),
+                    const VerticalDivider(width: 0, thickness: 0),
                     Expanded(child: pageContent),
                   ],
                 )
@@ -80,7 +80,7 @@ class _CourseContentState extends State<CourseContentPage> {
                       Positioned.fill(
                         child: GestureDetector(
                           onTap: () => setState(() => _showSidebar = false),
-                          child: Container(color: Colors.black.withOpacity(0.25)),
+                          child: Container(color: Colors.black.withValues()),
                         ),
                       ),
 
