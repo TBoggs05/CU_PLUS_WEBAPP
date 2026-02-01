@@ -2,7 +2,7 @@ import 'package:cu_plus_webapp/features/auth/ui/first_page.dart';
 import 'package:flutter/material.dart';
 import '../../../core/network/api_client.dart';
 import '../api/auth_api.dart';
-import '../../dashboard/home_page.dart';
+import '../../dashboard/course_content_page.dart';
 import './first_page.dart';
 import 'package:flutter_svg/flutter_svg.dart';
 
@@ -78,7 +78,7 @@ class _LoginPageState extends State<LoginPage> {
       if (!mounted) return;
       Navigator.pushReplacement(
         context,
-        MaterialPageRoute(builder: (_) => HomePage(email: email)),
+        MaterialPageRoute(builder: (_) => CourseContentPage(email: email)),
       );
 
       final token = (res["token"] ?? "").toString();
