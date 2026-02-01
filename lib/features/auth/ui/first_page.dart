@@ -23,9 +23,9 @@ class FirstPage extends StatelessWidget {
                         width: 305,
                         height: 305,
                       ),
-                
+
                       const Spacer(),
-                
+
                       Padding(
                         padding: const EdgeInsets.only(bottom: 50),
                         child: ElevatedButton(
@@ -33,7 +33,15 @@ class FirstPage extends StatelessWidget {
                             // Navigate to the next page
                             Navigator.push(
                               context,
-                              MaterialPageRoute(builder: (context) => LoginPage()),
+                              PageRouteBuilder(
+                                pageBuilder: (_, __, ___) => const LoginPage(),
+                                transitionsBuilder: (_, animation, __, child) {
+                                  return FadeTransition(
+                                    opacity: animation,
+                                    child: child,
+                                  );
+                                },
+                              ),
                             );
                           },
                           style: ElevatedButton.styleFrom(
@@ -67,7 +75,7 @@ class FirstPage extends StatelessWidget {
               ),
             ),
           );
-        }
+        },
       ),
     );
   }
