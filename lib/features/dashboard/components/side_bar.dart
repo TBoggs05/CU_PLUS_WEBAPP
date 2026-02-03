@@ -15,41 +15,70 @@ class Sidebar extends StatelessWidget {
   final void Function(SidebarItem item) onSelect;
   final VoidCallback onLogout;
 
-  Widget _item({
-    required BuildContext context,
-    required SidebarItem item,
-    required String title,
-    required String iconPath,
-    double iconSize = 22, // default size
-  }) {
-    final isActive = selectedItem == item;
+Widget _item({
+  required BuildContext context,
+  required SidebarItem item,
+  required String title,
+  required String iconPath,
+  double iconSize = 22, // default size
+}) {
+  final isActive = selectedItem == item;
 
-    return Padding(
-      padding: const EdgeInsets.symmetric(horizontal: 20, vertical: 6),
-      child: Container(
-        decoration: BoxDecoration(
-          color: isActive ? Colors.white : Colors.transparent,
-          borderRadius: BorderRadius.circular(12),
-        ),
-        child: ListTile(
-          contentPadding: const EdgeInsets.symmetric(horizontal: 16),
-          leading: SizedBox(
-            width: 28, // fixed space so text aligns
-            height: 28,
-            child: Center(
-              child: SvgPicture.asset(
-                iconPath,
-                width: iconSize,
-                height: iconSize,
+  return StatefulBuilder(
+    builder: (context, setLocalState) {
+      bool isHover = false;
+
+      return MouseRegion(
+        cursor: SystemMouseCursors.click,
+        onEnter: (_) => setLocalState(() => isHover = true),
+        onExit: (_) => setLocalState(() => isHover = false),
+        child: AnimatedContainer(
+          duration: const Duration(milliseconds: 160),
+          curve: Curves.easeOut,
+          margin: const EdgeInsets.symmetric(horizontal: 20, vertical: 6),
+          padding: const EdgeInsets.symmetric(vertical: 4),
+          transform: isHover
+              ? (Matrix4.identity()..scale(1.03))
+              : Matrix4.identity(),
+          decoration: BoxDecoration(
+            color: (isActive || isHover) ? Colors.white : Colors.transparent,
+            borderRadius: BorderRadius.circular(12),
+            boxShadow: (isActive || isHover)
+                ? [
+                    BoxShadow(
+                      color: Colors.black.withOpacity(0.12),
+                      blurRadius: 10,
+                      offset: const Offset(0, 4),
+                    ),
+                  ]
+                : [],
+          ),
+          child: ListTile(
+            contentPadding: const EdgeInsets.symmetric(horizontal: 16),
+            leading: SizedBox(
+              width: 28,
+              height: 28,
+              child: Center(
+                child: SvgPicture.asset(
+                  iconPath,
+                  width: iconSize,
+                  height: iconSize,
+                ),
               ),
             ),
+            title: Text(
+              title,
+              style: TextStyle(
+                fontWeight: isActive ? FontWeight.w600 : FontWeight.normal,
+              ),
+            ),
+            onTap: () => onSelect(item),
           ),
-          title: Text(title),
-          onTap: () => onSelect(item),
         ),
-      ),
-    );
-  }
+      );
+    },
+  );
+}
 
   @override
   Widget build(BuildContext context) {
