@@ -184,6 +184,7 @@ class _LoginPageState extends State<LoginPage> {
                               TextFormField(
                                 controller: _emailCtrl,
                                 keyboardType: TextInputType.emailAddress,
+                                textInputAction: TextInputAction.next,
                                 validator: (v) {
                                   final s = (v ?? "").trim();
                                   if (s.isEmpty) return "Email is required";
@@ -250,6 +251,12 @@ class _LoginPageState extends State<LoginPage> {
                               TextFormField(
                                 controller: _passCtrl,
                                 obscureText: true,
+                                textInputAction: TextInputAction.done,
+                                onFieldSubmitted: (_) {
+                                  if (!_loading) {
+                                    _onLogin();
+                                  }
+                                },
                                 validator: (v) {
                                   if ((v ?? "").isEmpty) return "Password is required";
                                   if ((v ?? "").length < 6) return "Min 6 characters";
