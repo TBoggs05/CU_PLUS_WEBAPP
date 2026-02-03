@@ -47,7 +47,8 @@ class _CourseContentState extends State<CourseContentPage> {
                 ? null
                 : IconButton(
                     icon: const Icon(Icons.menu),
-                    onPressed: () => setState(() => _showSidebar = !_showSidebar),
+                    onPressed: () =>
+                        setState(() => _showSidebar = !_showSidebar),
                   ),
           ),
 
@@ -69,39 +70,57 @@ class _CourseContentState extends State<CourseContentPage> {
                     Expanded(child: pageContent),
                   ],
                 )
-
               // Mobile layout: overlay drawer
               : Stack(
                   children: [
-                    pageContent,
+                    // Main content
+                    Center(child: Text("Logged in as: ${widget.email}")),
 
-                    if (_showSidebar) ...[
-                      // tap outside to close
-                      Positioned.fill(
+                    // Backdrop (tap to close)
+                    IgnorePointer(
+                      ignoring: !_showSidebar,
+                      child: AnimatedOpacity(
+                        duration: const Duration(milliseconds: 200),
+                        opacity: _showSidebar ? 1 : 0,
                         child: GestureDetector(
                           onTap: () => setState(() => _showSidebar = false),
-                          child: Container(color: Colors.black.withValues()),
+                          child: Container(
+                            color: Colors.black.withOpacity(0.35),
+                          ),
                         ),
                       ),
+                    ),
 
-                      Align(
-                        alignment: Alignment.centerLeft,
-                        child: SizedBox(
-                          width: MediaQuery.of(context).size.width,
-                          child: Material(
-                            elevation: 8,
+                    // Sliding sidebar
+                    Align(
+                      alignment: Alignment.centerLeft,
+                      child: AnimatedSlide(
+                        duration: const Duration(milliseconds: 240),
+                        curve: Curves.easeOutCubic,
+                        offset: _showSidebar
+                            ? Offset.zero
+                            : const Offset(-1, 0),
+                        child: AnimatedOpacity(
+                          duration: const Duration(milliseconds: 180),
+                          opacity: _showSidebar ? 1 : 0,
+                          child: SizedBox(
+                            width: double.infinity,
                             child: Sidebar(
                               selectedItem: _selectedItem,
-                              onSelect: (item) => _selectItem(item, isDesktop: false),
+                              onSelect: (item) {
+                                setState(() {
+                                  _selectedItem = item;
+                                  _showSidebar = false;
+                                });
+                              },
                               onLogout: () {
                                 setState(() => _showSidebar = false);
-                                // TODO: clear token + navigate to login
                               },
                             ),
                           ),
                         ),
                       ),
-                    ],
+                    ),
                   ],
                 ),
         );
