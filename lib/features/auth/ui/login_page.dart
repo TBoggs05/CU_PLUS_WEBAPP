@@ -21,6 +21,8 @@ class _LoginPageState extends State<LoginPage> {
 
   bool _rememberMe = false;
 
+  bool _hidePassword = true;
+
   bool _loading = false;
   String? _error;
   String? _tokenPreview;
@@ -79,9 +81,7 @@ class _LoginPageState extends State<LoginPage> {
       if (!mounted) return;
       Navigator.pushReplacement(
         context,
-        CupertinoPageRoute(
-          builder: (_) => CourseContentPage(email: email),
-        ),
+        CupertinoPageRoute(builder: (_) => CourseContentPage(email: email)),
       );
 
       final token = (res["token"] ?? "").toString();
@@ -166,7 +166,7 @@ class _LoginPageState extends State<LoginPage> {
                 child: IntrinsicHeight(
                   child: Column(
                     crossAxisAlignment: CrossAxisAlignment.stretch,
-                  
+
                     // Top Input fields
                     children: [
                       const SizedBox(height: 10),
@@ -178,7 +178,10 @@ class _LoginPageState extends State<LoginPage> {
                             children: [
                               const Text(
                                 "School Email",
-                                style: TextStyle(fontSize: 16, color: Color(0xFF111928)),
+                                style: TextStyle(
+                                  fontSize: 16,
+                                  color: Color(0xFF111928),
+                                ),
                               ),
                               const SizedBox(height: 10),
                               TextFormField(
@@ -188,31 +191,34 @@ class _LoginPageState extends State<LoginPage> {
                                 validator: (v) {
                                   final s = (v ?? "").trim();
                                   if (s.isEmpty) return "Email is required";
-                                  if (!s.contains("@")) return "Enter a valid email";
+                                  if (!s.contains("@"))
+                                    return "Enter a valid email";
                                   return null;
                                 },
                                 style: const TextStyle(color: Colors.black),
                                 decoration: InputDecoration(
                                   hintText: "name@cameron.edu",
-                                  hintStyle: const TextStyle(color: Color(0xFF6B7280)),
-                  
+                                  hintStyle: const TextStyle(
+                                    color: Color(0xFF6B7280),
+                                  ),
+
                                   filled: true,
                                   fillColor: Color(0xFFF9FAFB),
-                  
+
                                   border: OutlineInputBorder(
                                     borderRadius: BorderRadius.circular(8),
                                     borderSide: const BorderSide(
                                       color: Color(0xFFD1D5DB),
                                     ),
                                   ),
-                  
+
                                   enabledBorder: OutlineInputBorder(
                                     borderRadius: BorderRadius.circular(8),
                                     borderSide: const BorderSide(
                                       color: Color(0xFFD1D5DB),
                                     ),
                                   ),
-                  
+
                                   focusedBorder: OutlineInputBorder(
                                     borderRadius: BorderRadius.circular(8),
                                     borderSide: const BorderSide(
@@ -220,12 +226,14 @@ class _LoginPageState extends State<LoginPage> {
                                       width: 1.5,
                                     ),
                                   ),
-                  
+
                                   errorBorder: OutlineInputBorder(
                                     borderRadius: BorderRadius.circular(8),
-                                    borderSide: const BorderSide(color: Colors.red),
+                                    borderSide: const BorderSide(
+                                      color: Colors.red,
+                                    ),
                                   ),
-                  
+
                                   focusedErrorBorder: OutlineInputBorder(
                                     borderRadius: BorderRadius.circular(8),
                                     borderSide: const BorderSide(
@@ -237,20 +245,23 @@ class _LoginPageState extends State<LoginPage> {
                               ),
                             ],
                           ),
-                  
+
                           const SizedBox(height: 34),
-                  
+
                           Column(
                             crossAxisAlignment: CrossAxisAlignment.start,
                             children: [
                               const Text(
                                 "Password",
-                                style: TextStyle(fontSize: 16, color: Color(0xFF111928)),
+                                style: TextStyle(
+                                  fontSize: 16,
+                                  color: Color(0xFF111928),
+                                ),
                               ),
                               const SizedBox(height: 10),
                               TextFormField(
                                 controller: _passCtrl,
-                                obscureText: true,
+                                obscureText: _hidePassword,
                                 textInputAction: TextInputAction.done,
                                 onFieldSubmitted: (_) {
                                   if (!_loading) {
@@ -258,32 +269,36 @@ class _LoginPageState extends State<LoginPage> {
                                   }
                                 },
                                 validator: (v) {
-                                  if ((v ?? "").isEmpty) return "Password is required";
-                                  if ((v ?? "").length < 6) return "Min 6 characters";
+                                  if ((v ?? "").isEmpty)
+                                    return "Password is required";
+                                  if ((v ?? "").length < 6)
+                                    return "Min 6 characters";
                                   return null;
                                 },
                                 style: const TextStyle(color: Colors.black),
                                 decoration: InputDecoration(
                                   hintText: "••••••••••",
-                                  hintStyle: const TextStyle(color: Color(0xFF6B7280)),
-                  
+                                  hintStyle: const TextStyle(
+                                    color: Color(0xFF6B7280),
+                                  ),
+
                                   filled: true,
                                   fillColor: Color(0xFFF9FAFB),
-                  
+
                                   border: OutlineInputBorder(
                                     borderRadius: BorderRadius.circular(8),
                                     borderSide: const BorderSide(
                                       color: Color(0xFFD1D5DB),
                                     ),
                                   ),
-                  
+
                                   enabledBorder: OutlineInputBorder(
                                     borderRadius: BorderRadius.circular(8),
                                     borderSide: const BorderSide(
                                       color: Color(0xFFD1D5DB),
                                     ),
                                   ),
-                  
+
                                   focusedBorder: OutlineInputBorder(
                                     borderRadius: BorderRadius.circular(8),
                                     borderSide: const BorderSide(
@@ -291,12 +306,14 @@ class _LoginPageState extends State<LoginPage> {
                                       width: 1.5,
                                     ),
                                   ),
-                  
+
                                   errorBorder: OutlineInputBorder(
                                     borderRadius: BorderRadius.circular(8),
-                                    borderSide: const BorderSide(color: Colors.red),
+                                    borderSide: const BorderSide(
+                                      color: Colors.red,
+                                    ),
                                   ),
-                  
+
                                   focusedErrorBorder: OutlineInputBorder(
                                     borderRadius: BorderRadius.circular(8),
                                     borderSide: const BorderSide(
@@ -304,18 +321,38 @@ class _LoginPageState extends State<LoginPage> {
                                       width: 1.5,
                                     ),
                                   ),
+
+                                  // show/hide password icon
+                                  suffixIcon: IconButton(
+                                    iconSize: 20,
+                                    onPressed: () => setState(
+                                      () => _hidePassword = !_hidePassword,
+                                    ),
+                                    icon: Icon(
+                                      _hidePassword
+                                          ? Icons.visibility_off
+                                          : Icons.visibility,
+                                      color: const Color(0xFF6B7280),
+                                    ),
+                                    tooltip: _hidePassword
+                                        ? "Show password"
+                                        : "Hide password",
+                                  ),
                                 ),
                               ),
                             ],
                           ),
-                  
+
                           if (_error != null) ...[
-                            Text(_error!, style: const TextStyle(color: Colors.red)),
+                            Text(
+                              _error!,
+                              style: const TextStyle(color: Colors.red),
+                            ),
                             const SizedBox(height: 12),
                           ],
-                  
+
                           const SizedBox(height: 20),
-                  
+
                           Row(
                             mainAxisAlignment: MainAxisAlignment.spaceBetween,
                             children: [
@@ -337,11 +374,14 @@ class _LoginPageState extends State<LoginPage> {
                                       });
                                     },
                                     activeColor: Color(0xFFD9D9D9),
-                                    fillColor: WidgetStateProperty.resolveWith<Color>((
-                                      states,
-                                    ) {
-                                      return const Color(0xFFD9D9D9); // same color always
-                                    }),
+                                    fillColor:
+                                        WidgetStateProperty.resolveWith<Color>((
+                                          states,
+                                        ) {
+                                          return const Color(
+                                            0xFFD9D9D9,
+                                          ); // same color always
+                                        }),
                                     side: const BorderSide(
                                       color: Color(0xFFD9D9D9),
                                       width: 2,
@@ -350,7 +390,7 @@ class _LoginPageState extends State<LoginPage> {
                                   ),
                                 ],
                               ),
-                  
+
                               const Text(
                                 "Forgot password?",
                                 style: TextStyle(
@@ -364,7 +404,7 @@ class _LoginPageState extends State<LoginPage> {
                         ],
                       ),
                       const Spacer(),
-                  
+
                       // Bottom buttons
                       Row(
                         mainAxisAlignment: MainAxisAlignment.spaceBetween,
@@ -375,12 +415,19 @@ class _LoginPageState extends State<LoginPage> {
                               onPressed: () => Navigator.pop(context),
                               style:
                                   ElevatedButton.styleFrom(
-                                    backgroundColor: Color.fromARGB(255, 255, 255, 255),
+                                    backgroundColor: Color.fromARGB(
+                                      255,
+                                      255,
+                                      255,
+                                      255,
+                                    ),
                                     shape: RoundedRectangleBorder(
                                       borderRadius: BorderRadius.circular(9),
                                     ),
                                     elevation: 1, // shadow
-                                    padding: const EdgeInsets.symmetric(vertical: 22),
+                                    padding: const EdgeInsets.symmetric(
+                                      vertical: 22,
+                                    ),
                                   ).copyWith(
                                     overlayColor: WidgetStateProperty.all(
                                       Colors.transparent,
@@ -396,7 +443,7 @@ class _LoginPageState extends State<LoginPage> {
                               ),
                             ),
                           ),
-                  
+
                           SizedBox(
                             width: 150,
                             child: ElevatedButton(
@@ -407,7 +454,9 @@ class _LoginPageState extends State<LoginPage> {
                                   borderRadius: BorderRadius.circular(9),
                                 ),
                                 elevation: 2, // shadow
-                                padding: const EdgeInsets.symmetric(vertical: 22),
+                                padding: const EdgeInsets.symmetric(
+                                  vertical: 22,
+                                ),
                               ),
                               child: Text(
                                 _loading ? "Signing in..." : "Sign in",
@@ -426,7 +475,7 @@ class _LoginPageState extends State<LoginPage> {
                 ),
               ),
             );
-          }
+          },
         ),
       ),
     );
