@@ -12,12 +12,13 @@ class MyApp extends StatelessWidget {
   Widget build(BuildContext context) {
     return MaterialApp(
       debugShowCheckedModeBanner: false,
-      theme: ThemeData(fontFamily: 'DMSans'),
+      theme: ThemeData(
+        fontFamily: 'DMSans',
+        scaffoldBackgroundColor: Colors.white,
+      ),
       // home: FirstPage(),
       initialRoute: '/',
-      routes: {
-        '/': (context) => FirstPage(),
-      },
+      routes: {'/': (context) => FirstPage()},
     );
   }
 }
