@@ -1,9 +1,19 @@
+import 'package:cu_plus_webapp/features/dashboard/course_content_view.dart';
+import 'package:cu_plus_webapp/features/dashboard/manage_students_view.dart';
+import 'package:cu_plus_webapp/features/dashboard/message_view.dart';
+import 'package:cu_plus_webapp/features/dashboard/calender_view.dart';
 import 'package:flutter/material.dart';
 import './components/side_bar.dart';
 
 class CourseContentPage extends StatefulWidget {
-  const CourseContentPage({super.key, required this.email});
+  const CourseContentPage({
+    super.key,
+    required this.email,
+    this.initialItem = SidebarItem.courseContent,
+  });
+
   final String email;
+  final SidebarItem initialItem;
 
   @override
   State<CourseContentPage> createState() => _CourseContentState();
@@ -11,16 +21,39 @@ class CourseContentPage extends StatefulWidget {
 
 class _CourseContentState extends State<CourseContentPage> {
   bool _showSidebar = false;
-  SidebarItem _selectedItem = SidebarItem.course;
+  late SidebarItem _selectedItem;
+
+  @override
+  void initState() {
+    super.initState();
+    _selectedItem = widget.initialItem;
+  }
 
   void _selectItem(SidebarItem item, {required bool isDesktop}) {
     setState(() {
       _selectedItem = item;
-      if (!isDesktop) _showSidebar = false; // close drawer on mobile
+      if (!isDesktop) _showSidebar = false;
     });
-
-    // TODO: navigate based on item
   }
+
+  String _titleFor(SidebarItem item) {
+    switch (item) {
+      case SidebarItem.courseContent:
+        return "Course Content";
+      case SidebarItem.manageStudents:
+        return "Manage Students";
+      case SidebarItem.message:
+        return "Message";
+      case SidebarItem.calendar:
+        return "Calendar";
+      case SidebarItem.support:
+        return "Support";
+      case SidebarItem.setting:
+        return "Setting";
+    }
+  }
+
+  int _indexFor(SidebarItem item) => SidebarItem.values.indexOf(item);
 
   @override
   Widget build(BuildContext context) {
@@ -28,32 +61,36 @@ class _CourseContentState extends State<CourseContentPage> {
       builder: (context, constraints) {
         final isDesktop = constraints.maxWidth >= 900;
 
-        // If we switch to desktop while sidebar was open on mobile, close it
         if (isDesktop && _showSidebar) {
           WidgetsBinding.instance.addPostFrameCallback((_) {
             if (mounted) setState(() => _showSidebar = false);
           });
         }
 
-        final pageContent = Center(
-          child: Text("Logged in as: ${widget.email}"),
+        final content = IndexedStack(
+          index: _indexFor(_selectedItem),
+          children: [
+            CourseContentView(email: widget.email),
+            MessageView(email: widget.email),
+            CalenderView(email: widget.email),
+            ManageStudentsView(email: widget.email),
+            Center(child: Text("Support — Logged in as: ${widget.email}")),
+            Center(child: Text("Setting — Logged in as: ${widget.email}")),
+          ],
         );
 
         return Scaffold(
           appBar: AppBar(
             automaticallyImplyLeading: false,
-            title: const Text("Dashboard"),
+            title: Text(_titleFor(_selectedItem)),
             leading: isDesktop
                 ? null
                 : IconButton(
                     icon: const Icon(Icons.menu),
-                    onPressed: () =>
-                        setState(() => _showSidebar = !_showSidebar),
+                    onPressed: () => setState(() => _showSidebar = !_showSidebar),
                   ),
           ),
-
           body: isDesktop
-              // Desktop layout: sidebar always visible
               ? Row(
                   children: [
                     SizedBox(
@@ -62,21 +99,17 @@ class _CourseContentState extends State<CourseContentPage> {
                         selectedItem: _selectedItem,
                         onSelect: (item) => _selectItem(item, isDesktop: true),
                         onLogout: () {
-                          // TODO: clear token + navigate to login
+                          Navigator.pushNamedAndRemoveUntil(context, '/', (_) => false);
                         },
                       ),
                     ),
-                    const VerticalDivider(width: 0, thickness: 0),
-                    Expanded(child: pageContent),
+                    Expanded(child: content),
                   ],
                 )
-              // Mobile layout: overlay drawer
               : Stack(
                   children: [
-                    // Main content
-                    Center(child: Text("Logged in as: ${widget.email}")),
+                    Positioned.fill(child: content),
 
-                    // Backdrop (tap to close)
                     IgnorePointer(
                       ignoring: !_showSidebar,
                       child: AnimatedOpacity(
@@ -84,22 +117,17 @@ class _CourseContentState extends State<CourseContentPage> {
                         opacity: _showSidebar ? 1 : 0,
                         child: GestureDetector(
                           onTap: () => setState(() => _showSidebar = false),
-                          child: Container(
-                            color: Colors.black.withOpacity(0.35),
-                          ),
+                          child: Container(color: Colors.black.withOpacity(0.35)),
                         ),
                       ),
                     ),
 
-                    // Sliding sidebar
                     Align(
                       alignment: Alignment.centerLeft,
                       child: AnimatedSlide(
                         duration: const Duration(milliseconds: 240),
                         curve: Curves.easeOutCubic,
-                        offset: _showSidebar
-                            ? Offset.zero
-                            : const Offset(-1, 0),
+                        offset: _showSidebar ? Offset.zero : const Offset(-1, 0),
                         child: AnimatedOpacity(
                           duration: const Duration(milliseconds: 180),
                           opacity: _showSidebar ? 1 : 0,
@@ -107,14 +135,10 @@ class _CourseContentState extends State<CourseContentPage> {
                             width: double.infinity,
                             child: Sidebar(
                               selectedItem: _selectedItem,
-                              onSelect: (item) {
-                                setState(() {
-                                  _selectedItem = item;
-                                  _showSidebar = false;
-                                });
-                              },
+                              onSelect: (item) => _selectItem(item, isDesktop: false),
                               onLogout: () {
                                 setState(() => _showSidebar = false);
+                                Navigator.pushNamedAndRemoveUntil(context, '/', (_) => false);
                               },
                             ),
                           ),

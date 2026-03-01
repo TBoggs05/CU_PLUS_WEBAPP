@@ -3,7 +3,7 @@ import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import '../../../core/network/api_client.dart';
 import '../api/auth_api.dart';
-import '../../dashboard/course_content_page.dart';
+import '../../dashboard/dashboard_shell.dart';
 import './first_page.dart';
 import 'package:flutter_svg/flutter_svg.dart';
 
