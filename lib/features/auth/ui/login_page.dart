@@ -6,6 +6,7 @@ import '../api/auth_api.dart';
 import '../../dashboard/course_content_page.dart';
 import './first_page.dart';
 import 'package:flutter_svg/flutter_svg.dart';
+import 'package:cu_plus_webapp/features/dashboard/components/top_nav_bar.dart';
 
 class LoginPage extends StatefulWidget {
   const LoginPage({super.key});
@@ -100,7 +101,7 @@ class _LoginPageState extends State<LoginPage> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      appBar: topBar(),
+      appBar: NavBar(),
       backgroundColor: Colors.white,
       body: LayoutBuilder(
         builder: (context, constraints) {
