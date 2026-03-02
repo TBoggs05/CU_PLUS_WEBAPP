@@ -101,7 +101,7 @@ class _LoginPageState extends State<LoginPage> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      appBar: NavBar(),
+      appBar: topBar(),
       backgroundColor: Colors.white,
       body: LayoutBuilder(
         builder: (context, constraints) {

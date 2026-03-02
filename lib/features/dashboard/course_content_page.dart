@@ -45,9 +45,8 @@ class _CourseContentState extends State<CourseContentPage> {
             showMenu: !isDesktop,
             onMenuPressed: () => setState(() => _showSidebar = !_showSidebar),
             username: widget.email,
-            //automaticallyImplyLeading: false,
+            //\automaticallyImplyLeading: false,
           ),
-
           body: isDesktop
               // Desktop layout: sidebar always visible
               ? Row(
