@@ -1,9 +1,9 @@
-import 'package:cu_plus_webapp/features/dashboard/course_content_view.dart';
-import 'package:cu_plus_webapp/features/dashboard/manage_students_view.dart';
-import 'package:cu_plus_webapp/features/dashboard/message_view.dart';
-import 'package:cu_plus_webapp/features/dashboard/calender_view.dart';
+import 'package:cu_plus_webapp/features/students/ui/course_content_view.dart';
+import 'package:cu_plus_webapp/features/admin/ui/manage_students_view.dart';
+import 'package:cu_plus_webapp/features/students/ui/message_view.dart';
+import 'package:cu_plus_webapp/features/students/ui/calender_view.dart';
 import 'package:flutter/material.dart';
-import './components/side_bar.dart';
+import '../widgets/side_bar.dart';
 
 class CourseContentPage extends StatefulWidget {
   const CourseContentPage({

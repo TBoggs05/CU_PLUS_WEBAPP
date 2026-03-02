@@ -1,5 +1,5 @@
-import 'package:cu_plus_webapp/features/dashboard/dashboard_shell.dart';
-import 'package:cu_plus_webapp/features/dashboard/manage_students_view.dart';
+import 'package:cu_plus_webapp/features/dashboard/ui/dashboard_shell.dart';
+import 'package:cu_plus_webapp/features/admin/ui/manage_students_view.dart';
 import 'package:flutter/material.dart';
 import 'features/auth/ui/first_page.dart';
 
@@ -16,7 +16,6 @@ class MyApp extends StatelessWidget {
         fontFamily: 'DMSans',
         scaffoldBackgroundColor: Colors.white,
       ),
-      // home: FirstPage(),
       initialRoute: '/',
       routes: {'/': (context) => FirstPage()},
     );
