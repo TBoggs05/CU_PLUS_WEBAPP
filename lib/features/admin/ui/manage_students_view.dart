@@ -113,7 +113,8 @@ class _ManageStudentsViewState extends State<ManageStudentsView> {
                             child: _yearToggle(
                               label: "1st Year",
                               value: _year1,
-                              onChanged: (val) => _setFilter(() => _year1 = val),
+                              onChanged: (val) =>
+                                  _setFilter(() => _year1 = val),
                             ),
                           ),
                           const SizedBox(width: 12),
@@ -121,7 +122,8 @@ class _ManageStudentsViewState extends State<ManageStudentsView> {
                             child: _yearToggle(
                               label: "2nd Year",
                               value: _year2,
-                              onChanged: (val) => _setFilter(() => _year2 = val),
+                              onChanged: (val) =>
+                                  _setFilter(() => _year2 = val),
                             ),
                           ),
                         ],
@@ -139,7 +141,8 @@ class _ManageStudentsViewState extends State<ManageStudentsView> {
                             child: _yearToggle(
                               label: "3rd Year",
                               value: _year3,
-                              onChanged: (val) => _setFilter(() => _year3 = val),
+                              onChanged: (val) =>
+                                  _setFilter(() => _year3 = val),
                             ),
                           ),
                           const SizedBox(width: 12),
@@ -147,7 +150,8 @@ class _ManageStudentsViewState extends State<ManageStudentsView> {
                             child: _yearToggle(
                               label: "4th Year",
                               value: _year4,
-                              onChanged: (val) => _setFilter(() => _year4 = val),
+                              onChanged: (val) =>
+                                  _setFilter(() => _year4 = val),
                             ),
                           ),
                         ],
@@ -324,116 +328,88 @@ class _ManageStudentsViewState extends State<ManageStudentsView> {
 
                           const SizedBox(height: 16),
 
-                          // Table (takes full remaining height)
+                          // Table
                           Expanded(
                             child: Column(
                               children: [
                                 Expanded(
                                   child: SingleChildScrollView(
-                                    child: LayoutBuilder(
-                                      builder: (context, constraints) {
-                                        return ClipRRect(
-                                          borderRadius: BorderRadius.circular(
-                                            8,
-                                          ),
-                                          child: Container(
-                                            width: constraints.maxWidth,
-                                            decoration: BoxDecoration(
-                                              border: Border.all(
-                                                color: Colors.grey.shade200,
-                                                width: 1,
+                                    scrollDirection: Axis.horizontal,
+                                    child: ConstrainedBox(
+                                      constraints: const BoxConstraints(
+                                        minWidth: 900,
+                                      ),
+                                      child: DataTable(
+                                        columnSpacing: 40,
+                                        dividerThickness: 1,
+                                        columns: const [
+                                          DataColumn(
+                                            label: Text(
+                                              "School ID",
+                                              style: TextStyle(
+                                                fontSize: 15,
+                                                fontWeight: FontWeight.bold,
                                               ),
-                                              borderRadius:
-                                                  BorderRadius.circular(8),
-                                            ),
-                                            child: DataTable(
-                                              columnSpacing: 40,
-                                              dividerThickness:
-                                                  1, // row divider
-                                              columns: const [
-                                                DataColumn(
-                                                  label: Text(
-                                                    "School ID",
-                                                    style: TextStyle(
-                                                      fontSize: 15,
-                                                      fontWeight:
-                                                          FontWeight.bold,
-                                                    ),
-                                                  ),
-                                                ),
-                                                DataColumn(
-                                                  label: Text(
-                                                    "Name",
-                                                    style: TextStyle(
-                                                      fontSize: 15,
-                                                      fontWeight:
-                                                          FontWeight.bold,
-                                                    ),
-                                                  ),
-                                                ),
-                                                DataColumn(
-                                                  label: Text(
-                                                    "Email",
-                                                    style: TextStyle(
-                                                      fontSize: 15,
-                                                      fontWeight:
-                                                          FontWeight.bold,
-                                                    ),
-                                                  ),
-                                                ),
-                                                DataColumn(
-                                                  label: Text(
-                                                    "Year",
-                                                    style: TextStyle(
-                                                      fontSize: 15,
-                                                      fontWeight:
-                                                          FontWeight.bold,
-                                                    ),
-                                                  ),
-                                                ),
-                                                DataColumn(
-                                                  label: Text(
-                                                    "Actions",
-                                                    style: TextStyle(
-                                                      fontSize: 15,
-                                                      fontWeight:
-                                                          FontWeight.bold,
-                                                    ),
-                                                  ),
-                                                ),
-                                              ],
-                                              rows: const [
-                                                DataRow(
-                                                  cells: [
-                                                    DataCell(Text("2026001")),
-                                                    DataCell(
-                                                      Text("Jane Smith"),
-                                                    ),
-                                                    DataCell(
-                                                      Text("jane@school.edu"),
-                                                    ),
-                                                    DataCell(Text("Freshman")),
-                                                    DataCell(Text("...")),
-                                                  ],
-                                                ),
-                                                DataRow(
-                                                  cells: [
-                                                    DataCell(Text("2026002")),
-                                                    DataCell(
-                                                      Text("Alex Brown"),
-                                                    ),
-                                                    DataCell(
-                                                      Text("alex@school.edu"),
-                                                    ),
-                                                    DataCell(Text("Sophomore")),
-                                                    DataCell(Text("...")),
-                                                  ],
-                                                ),
-                                              ],
                                             ),
                                           ),
-                                        );
-                                      },
+                                          DataColumn(
+                                            label: Text(
+                                              "Name",
+                                              style: TextStyle(
+                                                fontSize: 15,
+                                                fontWeight: FontWeight.bold,
+                                              ),
+                                            ),
+                                          ),
+                                          DataColumn(
+                                            label: Text(
+                                              "Email",
+                                              style: TextStyle(
+                                                fontSize: 15,
+                                                fontWeight: FontWeight.bold,
+                                              ),
+                                            ),
+                                          ),
+                                          DataColumn(
+                                            label: Text(
+                                              "Year",
+                                              style: TextStyle(
+                                                fontSize: 15,
+                                                fontWeight: FontWeight.bold,
+                                              ),
+                                            ),
+                                          ),
+                                          DataColumn(
+                                            label: Text(
+                                              "Actions",
+                                              style: TextStyle(
+                                                fontSize: 15,
+                                                fontWeight: FontWeight.bold,
+                                              ),
+                                            ),
+                                          ),
+                                        ],
+                                        rows: const [
+                                          DataRow(
+                                            cells: [
+                                              DataCell(Text("2026001")),
+                                              DataCell(Text("Jane Smith")),
+                                              DataCell(Text("jane@school.edu")),
+                                              DataCell(Text("1st Year")),
+                                              DataCell(Text("...")),
+                                            ],
+                                          ),
+                                          DataRow(
+                                            cells: [
+                                              DataCell(Text("2026002")),
+                                              DataCell(Text("Alex Brown")),
+                                              DataCell(Text("alex@school.edu")),
+                                              DataCell(Text("2nd Year")),
+                                              DataCell(Text("...")),
+                                            ],
+                                          ),
+                                        ],
+                                      ),
                                     ),
                                   ),
                                 ),
