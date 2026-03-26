@@ -7,16 +7,55 @@ import 'package:cu_plus_webapp/features/dashboard/ui/dashboard_shell.dart';
 import 'package:cu_plus_webapp/features/admin/ui/course_content_view.dart';
 import 'package:flutter/material.dart';
 import 'features/auth/ui/first_page.dart';
+
 import 'package:go_router/go_router.dart';
 
-void main() => runApp(const MyApp());
+import 'package:provider/provider.dart';
+import 'features/auth/controller/auth_controller.dart';
+
+void main() {
+  runApp(
+    ChangeNotifierProvider(
+      create: (_) => AuthController(),
+      child: const MyApp(),
+    ),
+  );
+}
 
 class MyApp extends StatelessWidget {
   const MyApp({super.key});
 
   // Define router here
-  static final GoRouter _router = GoRouter(
+  static GoRouter _createRouter(AuthController auth) => GoRouter(
     initialLocation: '/',
+    refreshListenable: auth,
+    redirect: (context, state) {
+      final loggedIn = auth.isLoggedIn;
+      final isAdmin = auth.isAdmin;
+      final location = state.matchedLocation;
+
+      final goingToLogin = location == '/login';
+      final goingToLanding = location == '/';
+      final goingToDashboard = location.startsWith('/dashboard');
+      final goingToAdminRoute = location.startsWith('/dashboard/admin');
+
+      if (auth.isLoading) return null;
+
+      if (!loggedIn) {
+        if (goingToDashboard) return '/login';
+        return null;
+      }
+
+      if (loggedIn && (goingToLogin || goingToLanding)) {
+        return '/dashboard';
+      }
+
+      if (goingToAdminRoute && !isAdmin) {
+        return '/dashboard';
+      }
+
+      return null;
+    },
     routes: [
       GoRoute(
         path: '/',
@@ -44,21 +83,17 @@ class MyApp extends StatelessWidget {
           );
         },
       ),
-      // Everything under /dashboard keeps sidebar
       ShellRoute(
         builder: (context, state, child) {
-          // You can read email from query param later
-          final email = state.uri.queryParameters['email'] ?? '';
           return DashboardShell(
-            email: email,
-            child: child, // ✅ center content
+            child: child,
           );
         },
         routes: [
           GoRoute(
             path: '/dashboard',
             pageBuilder: (context, state) {
-              final email = state.uri.queryParameters['email'] ?? '';
+              final email = auth.user?.email ?? '';
               return NoTransitionPage(
                 key: state.pageKey,
                 child: CourseContentView(email: email),
@@ -68,7 +103,7 @@ class MyApp extends StatelessWidget {
           GoRoute(
             path: '/dashboard/admin/students',
             pageBuilder: (context, state) {
-              final email = state.uri.queryParameters['email'] ?? '';
+              final email = auth.user?.email ?? '';
               return NoTransitionPage(
                 key: state.pageKey,
                 child: ManageStudentsView(email: email),
@@ -78,7 +113,7 @@ class MyApp extends StatelessWidget {
           GoRoute(
             path: '/dashboard/admin/students/register',
             pageBuilder: (context, state) {
-              final email = state.uri.queryParameters['email'] ?? '';
+              final email = auth.user?.email ?? '';
               return NoTransitionPage(
                 key: state.pageKey,
                 child: RegisterStudentView(email: email),
@@ -88,7 +123,7 @@ class MyApp extends StatelessWidget {
           GoRoute(
             path: '/dashboard/admin/calendar',
             pageBuilder: (context, state) {
-              final email = state.uri.queryParameters['email'] ?? '';
+              final email = auth.user?.email ?? '';
               return NoTransitionPage(
                 key: state.pageKey,
                 child: CalenderView(email: email),
@@ -98,7 +133,7 @@ class MyApp extends StatelessWidget {
           GoRoute(
             path: '/dashboard/message',
             pageBuilder: (context, state) {
-              final email = state.uri.queryParameters['email'] ?? '';
+              final email = auth.user?.email ?? '';
               return NoTransitionPage(
                 key: state.pageKey,
                 child: MessageView(email: email),
@@ -112,8 +147,12 @@ class MyApp extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+
+    final auth = context.watch<AuthController>();
+    final router = _createRouter(auth);
+    
     return MaterialApp.router(
-      routerConfig: _router,
+      routerConfig: router,
       debugShowCheckedModeBanner: false,
       theme: ThemeData(
         fontFamily: 'DMSans',

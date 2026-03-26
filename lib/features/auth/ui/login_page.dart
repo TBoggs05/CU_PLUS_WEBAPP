@@ -2,8 +2,11 @@ import 'package:cu_plus_webapp/features/auth/ui/first_page.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:go_router/go_router.dart';
+import 'package:provider/provider.dart';
 import '../../../core/network/api_client.dart';
 import '../api/auth_api.dart';
+import '../controller/auth_controller.dart';
+import '../models/session_user.dart';
 
 class LoginPage extends StatefulWidget {
   const LoginPage({super.key});
@@ -49,21 +52,36 @@ class _LoginPageState extends State<LoginPage> {
     if (!_formKey.currentState!.validate()) return;
 
     setState(() => _loading = true);
+
     try {
       final res = await _authApi.login(
         email: _emailCtrl.text.trim(),
         password: _passCtrl.text,
       );
 
-      final user = res["user"] as Map<String, dynamic>?;
-      final email = (user?["email"] ?? _emailCtrl.text.trim()).toString();
+      final userMap = res["user"] as Map<String, dynamic>?;
+
+      if (userMap == null) {
+        throw Exception("Invalid user response");
+      }
+
+      // Create SessionUser
+      final user = SessionUser(
+        id: userMap["id"].toString(),
+        email: userMap["email"].toString(),
+        role: userMap["role"].toString(), // IMPORTANT
+      );
+
+      // Store in AuthController
+      final auth = context.read<AuthController>();
+      auth.setUser(user);
 
       if (!mounted) return;
 
-      // navigate
-      if (!mounted) return;
-      context.go("/dashboard?email=$email");
+      // Navigate WITHOUT passing email
+      context.go("/dashboard");
 
+      // debug token preview
       final token = (res["token"] ?? "").toString();
       setState(() {
         _tokenPreview = token.isEmpty
@@ -395,7 +413,8 @@ class _LoginPageState extends State<LoginPage> {
                           SizedBox(
                             width: 150,
                             child: ElevatedButton(
-                              onPressed: () => context.go('/'), // back to first page
+                              onPressed: () =>
+                                  context.go('/'), // back to first page
                               style:
                                   ElevatedButton.styleFrom(
                                     backgroundColor: Color.fromARGB(
