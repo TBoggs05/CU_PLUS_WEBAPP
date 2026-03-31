@@ -14,7 +14,6 @@ class ManageStudentsView extends StatefulWidget {
 }
 
 class _ManageStudentsViewState extends State<ManageStudentsView> {
-
   late final StudentApi _studentApi;
 
   bool _loadingStudents = true;
@@ -136,18 +135,59 @@ class _ManageStudentsViewState extends State<ManageStudentsView> {
   // ----------------------
   OverlayEntry? _actionEntry;
   LayerLink? _activeActionLink; // which row was clicked
+  String? _activeStudentId;
+  bool? _activeStudentIsActive;
 
-  void _toggleActionOverlay(LayerLink link) {
+  void _toggleActionOverlay(LayerLink link, String studentId, bool isActive) {
     if (_actionEntry != null) {
+      final wasSameLink = identical(_activeActionLink, link);
       _hideActionOverlay();
-      // if user clicked a different row, open again at new position
-      if (_activeActionLink != link) {
+
+      if (!wasSameLink) {
         _activeActionLink = link;
+        _activeStudentId = studentId;
+        _activeStudentIsActive = isActive;
         _showActionOverlay();
       }
     } else {
       _activeActionLink = link;
+      _activeStudentId = studentId;
+      _activeStudentIsActive = isActive;
       _showActionOverlay();
+    }
+  }
+
+  Future<void> _setStudentActive(bool shouldBeActive) async {
+    final studentId = _activeStudentId;
+    if (studentId == null) return;
+
+    try {
+      if (shouldBeActive) {
+        await _studentApi.reactivateStudent(studentId);
+      } else {
+        await _studentApi.deactivateStudent(studentId);
+      }
+      _hideActionOverlay();
+
+      if (!mounted) return;
+
+      ScaffoldMessenger.of(context).showSnackBar(
+        SnackBar(
+          content: Text(
+            shouldBeActive ? "Student reactivated" : "Student deactivated",
+          ),
+        ),
+      );
+
+      await _loadStudents();
+    } catch (e) {
+      _hideActionOverlay();
+
+      if (!mounted) return;
+
+      ScaffoldMessenger.of(context).showSnackBar(
+        SnackBar(content: Text(e.toString().replaceFirst("Exception: ", ""))),
+      );
     }
   }
 
@@ -210,13 +250,16 @@ class _ManageStudentsViewState extends State<ManageStudentsView> {
                       ),
                       _divider(),
                       _actionItem(
-                        icon: Icons.delete_outline,
-                        label: "Delete",
-                        isDanger: true,
-                        onTap: () {
-                          _hideActionOverlay();
-                          // TODO: delete action
-                        },
+                        icon: _activeStudentIsActive == true
+                            ? Icons.person_off_outlined
+                            : Icons.person_add_alt_1_outlined,
+                        label: _activeStudentIsActive == true
+                            ? "Deactivate"
+                            : "Reactivate",
+                        isDanger: _activeStudentIsActive == true,
+                        onTap: () => _setStudentActive(
+                          !(_activeStudentIsActive ?? true),
+                        ),
                       ),
                     ],
                   ),
@@ -235,17 +278,44 @@ class _ManageStudentsViewState extends State<ManageStudentsView> {
     _actionEntry?.remove();
     _actionEntry = null;
     _activeActionLink = null;
+    _activeStudentId = null;
+    _activeStudentIsActive = null;
   }
 
-  Widget _actionsCell() {
-    final link = LayerLink(); // ✅ unique per cell
+  Widget _actionsCell(String studentId, bool isActive) {
+    final link = LayerLink();
 
     return CompositedTransformTarget(
       link: link,
       child: IconButton(
         icon: const Icon(Icons.more_horiz),
         tooltip: "Actions",
-        onPressed: () => _toggleActionOverlay(link),
+        onPressed: () => _toggleActionOverlay(link, studentId, isActive),
+      ),
+    );
+  }
+
+  Widget _statusChip(bool isActive) {
+    final background = isActive
+        ? const Color(0xFFE8F5E9)
+        : const Color(0xFFFFEBEE);
+    final foreground = isActive
+        ? const Color(0xFF2E7D32)
+        : const Color(0xFFC62828);
+
+    return Container(
+      padding: const EdgeInsets.symmetric(horizontal: 10, vertical: 6),
+      decoration: BoxDecoration(
+        color: background,
+        borderRadius: BorderRadius.circular(999),
+      ),
+      child: Text(
+        isActive ? "Active" : "Deactivated",
+        style: TextStyle(
+          fontSize: 12,
+          fontWeight: FontWeight.w600,
+          color: foreground,
+        ),
       ),
     );
   }
@@ -571,9 +641,7 @@ class _ManageStudentsViewState extends State<ManageStudentsView> {
                                     ),
                                   )
                                 : _students.isEmpty
-                                ? const Center(
-                                    child: Text("No students found"),
-                                  )
+                                ? const Center(child: Text("No students found"))
                                 : Column(
                                     children: [
                                       Expanded(
@@ -629,6 +697,16 @@ class _ManageStudentsViewState extends State<ManageStudentsView> {
                                                 ),
                                                 DataColumn(
                                                   label: Text(
+                                                    "Status",
+                                                    style: TextStyle(
+                                                      fontSize: 15,
+                                                      fontWeight:
+                                                          FontWeight.bold,
+                                                    ),
+                                                  ),
+                                                ),
+                                                DataColumn(
+                                                  label: Text(
                                                     "Actions",
                                                     style: TextStyle(
                                                       fontSize: 15,
@@ -657,7 +735,17 @@ class _ManageStudentsViewState extends State<ManageStudentsView> {
                                                         ),
                                                       ),
                                                     ),
-                                                    DataCell(_actionsCell()),
+                                                    DataCell(
+                                                      _statusChip(
+                                                        student.isActive,
+                                                      ),
+                                                    ),
+                                                    DataCell(
+                                                      _actionsCell(
+                                                        student.id,
+                                                        student.isActive,
+                                                      ),
+                                                    ),
                                                   ],
                                                 );
                                               }).toList(),
@@ -667,7 +755,7 @@ class _ManageStudentsViewState extends State<ManageStudentsView> {
                                       ),
                                     ],
                                   ),
-                          )
+                          ),
                         ],
                       ),
                     ),

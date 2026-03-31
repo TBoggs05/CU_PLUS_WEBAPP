@@ -13,17 +13,14 @@ class StudentApi {
     required String schoolId,
     required String year,
   }) async {
-    final response = await _client.postJson(
-      '/admin/students',
-      {
-        "firstName": firstName,
-        "lastName": lastName,
-        "email": email,
-        "password": password,
-        "schoolId": schoolId,
-        "year": year,
-      },
-    );
+    final response = await _client.postJson('/admin/students', {
+      "firstName": firstName,
+      "lastName": lastName,
+      "email": email,
+      "password": password,
+      "schoolId": schoolId,
+      "year": year,
+    });
 
     if (response.isEmpty) {
       throw Exception("Failed to create student");
@@ -35,10 +32,27 @@ class StudentApi {
     final students = response['students'] as List<dynamic>? ?? [];
 
     return students
-        .map(
-          (item) => StudentRow.fromJson(item as Map<String, dynamic>),
-        )
+        .map((item) => StudentRow.fromJson(item as Map<String, dynamic>))
         .toList();
+  }
+
+  Future<void> deactivateStudent(String id) async {
+    final response = await _client.deleteJson('/admin/students/$id');
+
+    if (response.isEmpty) {
+      throw Exception("Failed to deactivate student");
+    }
+  }
+
+  Future<void> reactivateStudent(String id) async {
+    final response = await _client.patchJson(
+      '/admin/students/$id/reactivate',
+      {},
+    );
+
+    if (response.isEmpty) {
+      throw Exception("Failed to reactivate student");
+    }
   }
 }
 
@@ -51,6 +65,7 @@ class StudentRow {
   final String email;
   final String year;
   final String role;
+  final bool isActive;
 
   const StudentRow({
     required this.id,
@@ -61,6 +76,7 @@ class StudentRow {
     required this.email,
     required this.year,
     required this.role,
+    required this.isActive,
   });
 
   factory StudentRow.fromJson(Map<String, dynamic> json) {
@@ -76,6 +92,7 @@ class StudentRow {
       email: (json['email'] ?? '').toString(),
       year: (json['year'] ?? '').toString(),
       role: (json['role'] ?? '').toString(),
+      isActive: json['isActive'] == true,
     );
   }
 }
