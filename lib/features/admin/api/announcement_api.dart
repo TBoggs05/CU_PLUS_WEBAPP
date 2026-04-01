@@ -5,6 +5,7 @@ class AnnouncementApi {
 
   AnnouncementApi(this._client);
 
+  // CREATE
   Future<void> createAnnouncement({
     required String message,
     required bool everyone,
@@ -27,6 +28,30 @@ class AnnouncementApi {
 
     if (response == null) {
       throw Exception("Failed to create announcement");
+    }
+  }
+
+  // GET ALL
+  Future<List<dynamic>> getAnnouncements() async {
+    final response = await _client.getJson(
+      '/admin/announcements',
+    );
+
+    if (response == null || response['announcements'] == null) {
+      throw Exception("Failed to fetch announcements");
+    }
+
+    return response['announcements'];
+  }
+
+  // DELETE
+  Future<void> deleteAnnouncement(String id) async {
+    final response = await _client.deleteJson(
+      '/admin/announcements/$id',
+    );
+
+    if (response == null) {
+      throw Exception("Failed to delete announcement");
     }
   }
 }
