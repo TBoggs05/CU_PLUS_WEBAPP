@@ -134,16 +134,20 @@ CU_PLUS_WEBAPP/
 │   │   │
 │   │   ├── admin/             # Admin-specific features
 │   │   │   ├── api/
-│   │   │   └── ui/
-│   │   │       ├── manage_students_view.dart
-│   │   │       └── register_student_view.dart
+│   │   │   ├── ui/
+│   │   │   │   ├── manage_students_view.dart
+│   │   │   │   ├── register_student_view.dart
+│   │   │   │   └── announcements_view.dart
+│   │   │   └── widgets/
+│   │   │       └── announcement_feed.dart   # reusable announcements UI
 │   │   │
 │   │   └── students/          # Student-specific features
 │   │       ├── api/
 │   │       └── ui/
 │   │           ├── course_content_view.dart
 │   │           ├── message_view.dart
-│   │           └── calendar_view.dart
+│   │           ├── calendar_view.dart
+│   │           └── announcements_view.dart   # student announcements feed
 │   │
 │   └── main.dart              # App entry point + router setup
 │
@@ -334,6 +338,44 @@ if (!auth.isAdmin) {
 
 ---
 
+## 📢 Announcements Feature
+
+The app uses a shared announcements UI with role-based behavior.
+
+### Admin
+- Route: `/dashboard/admin/announcements`
+- Can:
+  - View all announcements
+  - Create announcements
+  - Edit announcements
+  - Delete announcements
+
+### Student
+- Route: `/dashboard/student/announcements`
+- Can:
+  - View announcements filtered by:
+    - `everyone = true`
+    - OR their academic year
+
+### Shared UI
+- `announcement_feed.dart` is reused by both admin and student views
+- Admin passes `onEdit` and `onDelete`
+- Student does NOT pass these → actions are hidden automatically
+
+### Sidebar Behavior
+- Only ONE "Announcements" button exists
+- Routing is determined by role:
+
+```dart
+if (isAdmin) {
+  context.go('/dashboard/admin/announcements');
+} else {
+  context.go('/dashboard/student/announcements');
+}
+```
+
+---
+
 ## 📌 Important Development Rules
 
 - Always use shared `ApiClient` from Provider
@@ -396,4 +438,11 @@ Create a new folder under `lib/features/` for each feature. For a dashboard, use
 - This is normal (`flutter run -d chrome` uses random ports)
 - Backend should always stay on fixed port (e.g. 4000)
 
----
+### 5. Sidebar button not working (Provider error)
+- Do NOT use `context.watch()` inside click handlers
+- Use `context.read()` or `authRead` instead
+- Example fix:
+  ```dart
+  final isAdmin = context.authRead.isAdmin;
+  ```
+---</file>
