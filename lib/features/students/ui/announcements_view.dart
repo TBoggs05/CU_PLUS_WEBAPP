@@ -1,7 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 import 'package:cu_plus_webapp/core/network/api_client.dart';
-import 'package:cu_plus_webapp/features/students/api/announcements_api.dart';
+import 'package:cu_plus_webapp/features/admin/api/announcement_api.dart';
 import 'package:cu_plus_webapp/features/admin/widgets/announcement_feed.dart';
 class StudentAnnouncementsView extends StatefulWidget {
   const StudentAnnouncementsView({
