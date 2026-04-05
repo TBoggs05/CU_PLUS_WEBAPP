@@ -2,6 +2,7 @@ import 'package:cu_plus_webapp/features/calender/ui/calender_view.dart';
 import 'package:cu_plus_webapp/features/manageStudents/ui/admin/manage_students_view.dart';
 import 'package:cu_plus_webapp/features/announcements/ui/admin/announcements_view.dart';
 import 'package:cu_plus_webapp/features/manageStudents/ui/admin/register_student_view.dart';
+import 'package:cu_plus_webapp/features/forms/ui/admin/create_form_view.dart';
 
 import 'package:cu_plus_webapp/features/announcements/ui/student/announcements_view.dart';
 
@@ -160,6 +161,15 @@ class MyApp extends StatefulWidget {
               return NoTransitionPage(
                 key: state.pageKey,
                 child: StudentAnnouncementsView(email: email),
+              );
+            },
+          ),
+          GoRoute(
+            path: '/dashboard/admin/forms/create',
+            pageBuilder: (context, state) {
+              return NoTransitionPage(
+                key: state.pageKey,
+                child: const CreateFormView(),
               );
             },
           ),
