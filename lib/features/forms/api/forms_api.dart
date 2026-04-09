@@ -28,6 +28,11 @@ class FormsApi {
     return res['forms'] ?? [];
   }
 
+  Future<List<dynamic>> getStudentForms() async {
+    final res = await _client.getJson('/student/forms');
+    return res['forms'] ?? [];
+  }
+
   Future<Map<String, dynamic>> getAdminFormById(String id) async {
     final res = await _client.getJson('/admin/forms/$id');
     return res['form'];
@@ -51,6 +56,22 @@ class FormsApi {
       'instructions': instructions,
       'isActive': isActive,
       'fields': fields,
+    });
+  }
+
+  Future<Map<String, dynamic>> getStudentFormById(String id) async {
+    final res = await _client.getJson('/student/forms/$id');
+    return Map<String, dynamic>.from(res['form']);
+  }
+
+  Future<Map<String, dynamic>> submitStudentForm({
+    required String formId,
+    required List<Map<String, dynamic>> answers,
+    bool submitNow = true,
+  }) async {
+    return await _client.postJson('/student/forms/$formId/submissions', {
+      'submitNow': submitNow,
+      'answers': answers,
     });
   }
 }

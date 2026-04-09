@@ -1,9 +1,9 @@
-
 import 'package:flutter/material.dart';
 import 'package:go_router/go_router.dart';
 import 'package:provider/provider.dart';
 import 'package:cu_plus_webapp/core/network/api_client.dart';
 import 'package:cu_plus_webapp/features/forms/api/forms_api.dart';
+import 'package:cu_plus_webapp/core/extensions/auth_extension.dart';
 
 class CourseContentView extends StatefulWidget {
   const CourseContentView({super.key, required this.email});
@@ -35,7 +35,10 @@ class _CourseContentViewState extends State<CourseContentView> {
 
     try {
       final api = FormsApi(context.read<ApiClient>());
-      final forms = await api.getAdminForms();
+      final isAdmin = context.authRead.isAdmin;
+      final forms = isAdmin
+          ? await api.getAdminForms()
+          : await api.getStudentForms();
 
       if (!mounted) return;
 
@@ -82,6 +85,7 @@ class _CourseContentViewState extends State<CourseContentView> {
 
   @override
   Widget build(BuildContext context) {
+    final isAdmin = context.auth.isAdmin;
     return Padding(
       padding: const EdgeInsets.all(24),
       child: Column(
@@ -97,39 +101,41 @@ class _CourseContentViewState extends State<CourseContentView> {
             style: const TextStyle(fontSize: 16),
           ),
           const SizedBox(height: 24),
-          Align(
-            alignment: Alignment.centerRight,
-            child: ElevatedButton.icon(
-              onPressed: () async {
-                await context.push('/dashboard/admin/forms/create');
-                if (!mounted) return;
-                _loadForms();
-              },
-              icon: const Icon(Icons.add, color: Colors.black),
-              label: const Text(
-                "Create Form",
-                style: TextStyle(
-                  fontSize: 16,
-                  fontWeight: FontWeight.bold,
-                  color: Colors.black,
+          if (isAdmin) ...[
+            Align(
+              alignment: Alignment.centerRight,
+              child: ElevatedButton.icon(
+                onPressed: () async {
+                  await context.push('/dashboard/admin/forms/create');
+                  if (!mounted) return;
+                  _loadForms();
+                },
+                icon: const Icon(Icons.add, color: Colors.black),
+                label: const Text(
+                  "Create Form",
+                  style: TextStyle(
+                    fontSize: 16,
+                    fontWeight: FontWeight.bold,
+                    color: Colors.black,
+                  ),
                 ),
-              ),
-              style: ElevatedButton.styleFrom(
-                backgroundColor: Colors.yellow.shade600,
-                foregroundColor: Colors.black,
-                padding: const EdgeInsets.symmetric(
-                  horizontal: 20,
-                  vertical: 14,
+                style: ElevatedButton.styleFrom(
+                  backgroundColor: Colors.yellow.shade600,
+                  foregroundColor: Colors.black,
+                  padding: const EdgeInsets.symmetric(
+                    horizontal: 20,
+                    vertical: 14,
+                  ),
+                  shape: RoundedRectangleBorder(
+                    borderRadius: BorderRadius.circular(10),
+                    side: BorderSide(color: Colors.grey.shade400),
+                  ),
+                  elevation: 2,
                 ),
-                shape: RoundedRectangleBorder(
-                  borderRadius: BorderRadius.circular(10),
-                  side: BorderSide(color: Colors.grey.shade400),
-                ),
-                elevation: 2,
               ),
             ),
-          ),
-          const SizedBox(height: 20),
+            const SizedBox(height: 20),
+          ],
           Expanded(
             child: Container(
               width: double.infinity,
@@ -171,81 +177,154 @@ class _CourseContentViewState extends State<CourseContentView> {
                       itemBuilder: (context, index) {
                         final form = _forms[index] as Map<String, dynamic>;
                         final submissionCount =
-                            ((form['_count'] as Map<String, dynamic>?)?['submissions'] ?? 0)
+                            ((form['_count']
+                                        as Map<
+                                          String,
+                                          dynamic
+                                        >?)?['submissions'] ??
+                                    0)
                                 .toString();
                         final isActive = form['isActive'] == true;
+                        final isAvailableToStudent = isAdmin
+                            ? true
+                            : form['isAvailableToStudent'] == true;
 
-                        return Container(
-                          padding: const EdgeInsets.all(16),
-                          decoration: BoxDecoration(
-                            color: Colors.white,
+                        return Opacity(
+                          opacity: isAvailableToStudent ? 1 : 0.5,
+                          child: InkWell(
                             borderRadius: BorderRadius.circular(12),
-                            border: Border.all(color: Colors.grey.shade300),
-                          ),
-                          child: Column(
-                            crossAxisAlignment: CrossAxisAlignment.start,
-                            children: [
-                              Row(
+                            onTap: () {
+                              final formId = form['id']?.toString();
+                              if (formId == null) return;
+
+                              if (isAdmin) {
+                                context.go(
+                                  '/dashboard/admin/forms/$formId/edit',
+                                );
+                              } else {
+                                if (!isAvailableToStudent) return;
+                                context.go('/dashboard/student/forms/$formId');
+                              }
+                            },
+                            child: Container(
+                              padding: const EdgeInsets.all(16),
+                              decoration: BoxDecoration(
+                                color: isAvailableToStudent
+                                    ? Colors.white
+                                    : Colors.grey.shade200,
+                                borderRadius: BorderRadius.circular(12),
+                                border: Border.all(color: Colors.grey.shade300),
+                              ),
+                              child: Column(
+                                crossAxisAlignment: CrossAxisAlignment.start,
                                 children: [
-                                  Expanded(
-                                    child: Text(
-                                      (form['title'] ?? 'Untitled Form').toString(),
-                                      style: const TextStyle(
-                                        fontSize: 18,
-                                        fontWeight: FontWeight.w600,
+                                  Row(
+                                    crossAxisAlignment:
+                                        CrossAxisAlignment.start,
+                                    children: [
+                                      Expanded(
+                                        child: Text(
+                                          (form['title'] ?? 'Untitled Form')
+                                              .toString(),
+                                          style: const TextStyle(
+                                            fontSize: 18,
+                                            fontWeight: FontWeight.w600,
+                                          ),
+                                        ),
                                       ),
+                                      const SizedBox(width: 12),
+                                      if (isAdmin)
+                                        OutlinedButton.icon(
+                                          onPressed: () {
+                                            final formId = form['id']
+                                                ?.toString();
+                                            if (formId != null) {
+                                              context.go(
+                                                '/dashboard/admin/forms/$formId/edit',
+                                              );
+                                            }
+                                          },
+                                          icon: const Icon(
+                                            Icons.edit_outlined,
+                                            size: 16,
+                                          ),
+                                          label: const Text('Edit'),
+                                          style: OutlinedButton.styleFrom(
+                                            foregroundColor: Colors.black87,
+                                            side: BorderSide(
+                                              color: Colors.grey.shade300,
+                                            ),
+                                            padding: const EdgeInsets.symmetric(
+                                              horizontal: 12,
+                                              vertical: 10,
+                                            ),
+                                            shape: RoundedRectangleBorder(
+                                              borderRadius:
+                                                  BorderRadius.circular(8),
+                                            ),
+                                          ),
+                                        ),
+                                      if (isAdmin) const SizedBox(width: 8),
+                                      Container(
+                                        padding: const EdgeInsets.symmetric(
+                                          horizontal: 10,
+                                          vertical: 6,
+                                        ),
+                                        decoration: BoxDecoration(
+                                          color: isActive
+                                              ? const Color(0xFFE8F5E9)
+                                              : const Color(0xFFFFEBEE),
+                                          borderRadius: BorderRadius.circular(
+                                            999,
+                                          ),
+                                        ),
+                                        child: Text(
+                                          isActive ? 'Active' : 'Inactive',
+                                          style: TextStyle(
+                                            fontSize: 12,
+                                            fontWeight: FontWeight.w600,
+                                            color: isActive
+                                                ? const Color(0xFF2E7D32)
+                                                : const Color(0xFFC62828),
+                                          ),
+                                        ),
+                                      ),
+                                    ],
+                                  ),
+                                  const SizedBox(height: 8),
+                                  Text(
+                                    (form['description'] ?? 'No description')
+                                        .toString(),
+                                    style: TextStyle(
+                                      fontSize: 14,
+                                      color: Colors.grey.shade700,
                                     ),
                                   ),
-                                  Container(
-                                    padding: const EdgeInsets.symmetric(
-                                      horizontal: 10,
-                                      vertical: 6,
-                                    ),
-                                    decoration: BoxDecoration(
-                                      color: isActive
-                                          ? const Color(0xFFE8F5E9)
-                                          : const Color(0xFFFFEBEE),
-                                      borderRadius: BorderRadius.circular(999),
-                                    ),
-                                    child: Text(
-                                      isActive ? 'Active' : 'Inactive',
-                                      style: TextStyle(
-                                        fontSize: 12,
-                                        fontWeight: FontWeight.w600,
-                                        color: isActive
-                                            ? const Color(0xFF2E7D32)
-                                            : const Color(0xFFC62828),
+                                  const SizedBox(height: 12),
+                                  Wrap(
+                                    spacing: 12,
+                                    runSpacing: 8,
+                                    children: [
+                                      _InfoChip(
+                                        label:
+                                            'Year: ${_formatYear(form['year'])}',
                                       ),
-                                    ),
+                                      _InfoChip(
+                                        label:
+                                            'Due: ${_formatDueDate(form['dueDate'])}',
+                                      ),
+                                      _InfoChip(
+                                        label: 'Submissions: $submissionCount',
+                                      ),
+                                      if (!isAdmin && !isAvailableToStudent)
+                                        const _InfoChip(
+                                          label: 'Not available for your year',
+                                        ),
+                                    ],
                                   ),
                                 ],
                               ),
-                              const SizedBox(height: 8),
-                              Text(
-                                (form['description'] ?? 'No description').toString(),
-                                style: TextStyle(
-                                  fontSize: 14,
-                                  color: Colors.grey.shade700,
-                                ),
-                              ),
-                              const SizedBox(height: 12),
-                              Wrap(
-                                spacing: 12,
-                                runSpacing: 8,
-                                children: [
-                                  _InfoChip(
-                                    label: 'Year: ${_formatYear(form['year'])}',
-                                  ),
-                                  _InfoChip(
-                                    label:
-                                        'Due: ${_formatDueDate(form['dueDate'])}',
-                                  ),
-                                  _InfoChip(
-                                    label: 'Submissions: $submissionCount',
-                                  ),
-                                ],
-                              ),
-                            ],
+                            ),
                           ),
                         );
                       },
@@ -274,10 +353,7 @@ class _InfoChip extends StatelessWidget {
       ),
       child: Text(
         label,
-        style: const TextStyle(
-          fontSize: 12,
-          fontWeight: FontWeight.w500,
-        ),
+        style: const TextStyle(fontSize: 12, fontWeight: FontWeight.w500),
       ),
     );
   }

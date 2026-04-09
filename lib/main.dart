@@ -9,6 +9,8 @@ import 'package:cu_plus_webapp/features/announcements/ui/student/announcements_v
 import 'package:cu_plus_webapp/features/auth/ui/login_page.dart';
 import 'package:cu_plus_webapp/features/dashboard/ui/dashboard_shell.dart';
 import 'package:cu_plus_webapp/features/courseContent/ui/course_content_view.dart';
+import 'package:cu_plus_webapp/features/forms/ui/student/student_form_fill_view.dart';
+
 import 'package:flutter/material.dart';
 import 'features/auth/ui/first_page.dart';
 
@@ -165,11 +167,41 @@ class MyApp extends StatefulWidget {
             },
           ),
           GoRoute(
+            path: '/dashboard/admin/forms',
+            pageBuilder: (context, state) {
+              final email = auth.user?.email ?? '';
+              return NoTransitionPage(
+                key: state.pageKey,
+                child: CourseContentView(email: email),
+              );
+            },
+          ),
+          GoRoute(
             path: '/dashboard/admin/forms/create',
             pageBuilder: (context, state) {
               return NoTransitionPage(
                 key: state.pageKey,
                 child: const CreateFormView(),
+              );
+            },
+          ),
+          GoRoute(
+            path: '/dashboard/admin/forms/:id/edit',
+            pageBuilder: (context, state) {
+              final formId = state.pathParameters['id']!;
+              return NoTransitionPage(
+                key: state.pageKey,
+                child: CreateFormView(formId: formId),
+              );
+            },
+          ),
+          GoRoute(
+            path: '/dashboard/student/forms/:id',
+            pageBuilder: (context, state) {
+              final formId = state.pathParameters['id']!;
+              return NoTransitionPage(
+                key: state.pageKey,
+                child: StudentFormFillView(formId: formId),
               );
             },
           ),
