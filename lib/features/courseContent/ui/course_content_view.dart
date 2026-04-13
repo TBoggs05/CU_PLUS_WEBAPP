@@ -5,7 +5,6 @@ import 'package:cu_plus_webapp/core/network/api_client.dart';
 import 'package:cu_plus_webapp/features/forms/api/forms_api.dart';
 import 'package:cu_plus_webapp/core/extensions/auth_extension.dart';
 import '../widget/folder.dart';
-import '../widget/content_item.dart';
 
 class CourseContentView extends StatefulWidget {
   const CourseContentView({super.key, required this.email});
@@ -31,12 +30,6 @@ class _CourseContentViewState extends State<CourseContentView> {
       Folder(
         title: "FALL",
         isExpanded: true,
-        contents: [
-          ContentItem(
-            title: "1st Year - Mid-Semester Grade Check - Fall",
-            dueDate: "10/20/25, 11:49 PM",
-          ),
-        ],
       ),
       Folder(
         title: "SPRING",
@@ -232,9 +225,120 @@ class _CourseContentViewState extends State<CourseContentView> {
     );
   }
 
-  Widget _buildFolderTile(
+  Future<void> _showAttachExistingFormDialog(Folder folder) async {
+  if (_forms.isEmpty) {
+    ScaffoldMessenger.of(context).showSnackBar(
+      const SnackBar(content: Text('No forms available to attach yet.')),
+    );
+    return;
+  }
+
+  Map<String, dynamic>? selectedForm =
+      _forms.first as Map<String, dynamic>;
+
+  await showDialog(
+    context: context,
+    builder: (context) {
+      return StatefulBuilder(
+        builder: (context, setDialogState) {
+          return AlertDialog(
+            title: const Text("Attach Existing Form"),
+            content: DropdownButtonFormField<Map<String, dynamic>>(
+              value: selectedForm,
+              isExpanded: true,
+              decoration: const InputDecoration(
+                labelText: "Choose form",
+              ),
+              items: _forms.map((form) {
+                final formMap = form as Map<String, dynamic>;
+                return DropdownMenuItem<Map<String, dynamic>>(
+                  value: formMap,
+                  child: Text(
+                    (formMap['title'] ?? 'Untitled Form').toString(),
+                    overflow: TextOverflow.ellipsis,
+                  ),
+                );
+              }).toList(),
+              onChanged: (value) {
+                setDialogState(() {
+                  selectedForm = value;
+                });
+              },
+            ),
+            actions: [
+              TextButton(
+                onPressed: () {
+                  Navigator.pop(context);
+                },
+                child: const Text("Cancel"),
+              ),
+              ElevatedButton(
+                onPressed: () {
+                  if (selectedForm != null) {
+                    final selectedId = selectedForm!['id']?.toString();
+
+                    final alreadyAttached = folder.attachedForms.any(
+                      (form) => form['id']?.toString() == selectedId,
+                    );
+
+                    if (!alreadyAttached) {
+                      setState(() {
+                        folder.attachedForms.add(selectedForm!);
+                        folder.isExpanded = true;
+                      });
+                    }
+                  }
+
+                  Navigator.pop(context);
+                },
+                child: const Text("Attach"),
+              ),
+            ],
+          );
+        },
+      );
+    },
+  );
+}
+
+  Future<void> _showAddContentOptionsDialog(Folder folder) async {
+  await showDialog(
+    context: context,
+    builder: (context) {
+      return AlertDialog(
+        title: const Text("Add Content"),
+        content: const Text("What would you like to add?"),
+        actions: [
+          TextButton(
+            onPressed: () {
+              Navigator.pop(context);
+            },
+            child: const Text("Cancel"),
+          ),
+          ElevatedButton(
+            onPressed: () {
+              Navigator.pop(context);
+              _showAddSubfolderDialog(folder);
+            },
+            child: const Text("Subfolder"),
+          ),
+          ElevatedButton(
+            onPressed: () {
+              Navigator.pop(context);
+              _showAttachExistingFormDialog(folder);
+            },
+            child: const Text("Attach Form"),
+          ),
+        ],
+      );
+    },
+  );
+}
+
+Widget _buildFolderTile(
   Folder folder, {
   int? folderIndex,
+  Folder? parentFolder,
   double leftPadding = 0,
   bool isTopLevel = false,
 }) {
@@ -281,11 +385,10 @@ class _CourseContentViewState extends State<CourseContentView> {
                       _showEditFolderDialog(folder);
                     },
                   ),
-
                 if (isEditMode)
                   OutlinedButton.icon(
                     onPressed: () {
-                      _showAddSubfolderDialog(folder);
+                      _showAddContentOptionsDialog(folder);
                     },
                     icon: const Icon(Icons.add, size: 16),
                     label: const Text("Add Content"),
@@ -313,12 +416,16 @@ class _CourseContentViewState extends State<CourseContentView> {
                     });
                   },
                 ),
-                if (isEditMode && isTopLevel && folderIndex != null)
+                if (isEditMode)
                   IconButton(
                     icon: const Icon(Icons.delete, color: Colors.red),
                     onPressed: () {
                       setState(() {
-                        folders.removeAt(folderIndex);
+                        if (isTopLevel && folderIndex != null) {
+                          folders.removeAt(folderIndex);
+                        } else if (parentFolder != null) {
+                          parentFolder.children.remove(folder);
+                        }
                       });
                     },
                   ),
@@ -330,49 +437,53 @@ class _CourseContentViewState extends State<CourseContentView> {
         if (folder.isExpanded) ...[
           const SizedBox(height: 8),
 
-          // Child folders
           ...folder.children.map(
             (childFolder) => _buildFolderTile(
               childFolder,
+              parentFolder: folder,
               leftPadding: 24,
             ),
           ),
 
-          // Content items
-          ...folder.contents.map(
-            (content) => Container(
+          ...folder.attachedForms.map(
+            (form) => Container(
               margin: const EdgeInsets.only(left: 24, top: 8),
               child: ListTile(
                 contentPadding: const EdgeInsets.symmetric(horizontal: 8),
-                leading: const Icon(Icons.insert_drive_file_outlined),
-                title: Text(content.title),
-                subtitle: content.dueDate != null
-                    ? Text(
-                        "Due: ${content.dueDate}",
-                        style: TextStyle(color: Colors.grey.shade600),
-                      )
-                    : null,
+                leading: const Icon(Icons.description_outlined),
+                title: Text((form['title'] ?? 'Untitled Form').toString()),
+                subtitle: Text(
+                  "Due: ${_formatDueDate(form['dueDate'])}",
+                  style: TextStyle(color: Colors.grey.shade600),
+                ),
                 trailing: isEditMode
                     ? Row(
                         mainAxisSize: MainAxisSize.min,
                         children: [
                           IconButton(
-                            icon: const Icon(Icons.edit_outlined, size: 20),
+                            icon: const Icon(Icons.open_in_new, size: 20),
                             onPressed: () {
-                              // content edit later
+                              final formId = form['id']?.toString();
+                              if (formId == null) return;
+                              context.go('/dashboard/admin/forms/$formId/edit');
                             },
                           ),
                           IconButton(
                             icon: const Icon(Icons.delete, color: Colors.red),
                             onPressed: () {
                               setState(() {
-                                folder.contents.remove(content);
+                                folder.attachedForms.remove(form);
                               });
                             },
                           ),
                         ],
                       )
                     : null,
+                onTap: () {
+                  final formId = form['id']?.toString();
+                  if (formId == null) return;
+                  context.go('/dashboard/admin/forms/$formId/preview');
+                },
               ),
             ),
           ),

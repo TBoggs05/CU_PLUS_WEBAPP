@@ -1,16 +1,14 @@
-import 'content_item.dart';
-
 class Folder {
   String title;
   bool isExpanded;
   List<Folder> children;
-  List<ContentItem> contents;
+  List<Map<String, dynamic>> attachedForms;
 
   Folder({
     required this.title,
     this.isExpanded = false,
     List<Folder>? children,
-    List<ContentItem>? contents,
+    List<Map<String, dynamic>>? attachedForms,
   })  : children = children ?? [],
-        contents = contents ?? [];
+        attachedForms = attachedForms ?? [];
 }
