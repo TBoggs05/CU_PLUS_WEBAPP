@@ -1,7 +1,10 @@
 import 'package:flutter/material.dart';
 import 'package:go_router/go_router.dart';
+import 'package:provider/provider.dart';
 import '../widgets/side_bar.dart';
 import '../widgets/top_nav_bar.dart';
+import '../api/notifications_api.dart';
+import '../../../core/network/api_client.dart';
 import '../../../core/extensions/auth_extension.dart';
 
 class DashboardShell extends StatefulWidget {
@@ -15,11 +18,83 @@ class DashboardShell extends StatefulWidget {
 class _DashboardShellState extends State<DashboardShell> {
   bool _showSidebar = false;
   late SidebarItem _selectedItem;
+  int _unreadNotificationCount = 0;
+  List<Map<String, dynamic>> _notifications = [];
 
   @override
   void initState() {
     super.initState();
     _selectedItem = SidebarItem.courseContent;
+    WidgetsBinding.instance.addPostFrameCallback((_) {
+      _loadNotifications();
+    });
+  }
+
+  Future<void> _loadNotifications() async {
+    try {
+      final api = NotificationsApi(context.read<ApiClient>());
+      final notifications = await api.getNotifications();
+      final count = await api.getUnreadCount();
+
+      if (!mounted) return;
+      setState(() {
+        _notifications = notifications;
+        _unreadNotificationCount = count;
+      });
+    } catch (_) {
+      if (!mounted) return;
+      setState(() {
+        _notifications = [];
+        _unreadNotificationCount = 0;
+      });
+    }
+  }
+
+  Future<void> _handleNotificationTap(Map<String, dynamic> notification) async {
+    final id = notification['id']?.toString();
+    final targetType = notification['targetType']?.toString();
+    final targetId = notification['targetId']?.toString();
+    final isRead = notification['isRead'] == true;
+
+    try {
+      final api = NotificationsApi(context.read<ApiClient>());
+
+      if (!isRead && id != null) {
+        await api.markAsRead(id);
+      }
+
+      await _loadNotifications();
+
+      if (!mounted) return;
+
+      if (targetType == 'form' && targetId != null) {
+        context.go('/dashboard/student/forms/$targetId');
+        return;
+      }
+
+      if (targetType == 'announcement') {
+        context.go('/dashboard/student/announcements');
+        return;
+      }
+    } catch (_) {
+      if (!mounted) return;
+    }
+  }
+
+  Future<void> _handleDeleteNotification(String id) async {
+    try {
+      final api = NotificationsApi(context.read<ApiClient>());
+      await api.deleteNotification(id);
+      await _loadNotifications();
+    } catch (_) {}
+  }
+
+  Future<void> _handleClearAllNotifications() async {
+    try {
+      final api = NotificationsApi(context.read<ApiClient>());
+      await api.clearAllNotifications();
+      await _loadNotifications();
+    } catch (_) {}
   }
 
   void _selectItem(SidebarItem item, {required bool isDesktop}) {
@@ -100,6 +175,11 @@ class _DashboardShellState extends State<DashboardShell> {
           appBar: NavBar(
             showMenu: !isDesktop,
             onMenuPressed: () => setState(() => _showSidebar = !_showSidebar),
+            unreadNotificationCount: _unreadNotificationCount,
+            notifications: _notifications,
+            onNotificationTap: _handleNotificationTap,
+            onDeleteNotification: _handleDeleteNotification,
+            onClearAllNotifications: _handleClearAllNotifications,
             username: email,
             //\automaticallyImplyLeading: false,
           ),
