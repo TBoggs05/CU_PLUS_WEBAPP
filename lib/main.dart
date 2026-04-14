@@ -15,6 +15,8 @@ import 'package:cu_plus_webapp/features/forms/ui/student/student_form_fill_view.
 import 'package:cu_plus_webapp/features/forms/ui/admin/admin_form_preview_view.dart';
 import 'package:cu_plus_webapp/features/forms/ui/admin/admin_form_submissions_view.dart';
 import 'package:cu_plus_webapp/features/forms/ui/admin/admin_form_submission_detail_view.dart';
+import 'package:cu_plus_webapp/features/support/ui/support_view.dart';
+
 
 import 'package:flutter/material.dart';
 import 'features/auth/ui/first_page.dart';
@@ -239,6 +241,15 @@ class MyApp extends StatefulWidget {
               return NoTransitionPage(
                 key: state.pageKey,
                 child: StudentFormFillView(formId: formId),
+              );
+            },
+          ),
+          GoRoute(
+            path: '/dashboard/support',
+            pageBuilder: (context, state) {
+              return NoTransitionPage(
+                key: state.pageKey,
+                child: SupportView(),
               );
             },
           ),
