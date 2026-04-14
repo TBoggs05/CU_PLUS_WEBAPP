@@ -1,4 +1,4 @@
-import 'package:cu_plus_webapp/features/calender/ui/calender_view.dart';
+import 'package:cu_plus_webapp/features/calender/ui/calendar_view.dart';
 import 'package:cu_plus_webapp/features/manageStudents/ui/admin/manage_students_view.dart';
 import 'package:cu_plus_webapp/features/announcements/ui/admin/announcements_view.dart';
 import 'package:cu_plus_webapp/features/manageStudents/ui/admin/register_student_view.dart';
@@ -144,12 +144,11 @@ class MyApp extends StatefulWidget {
             },
           ),
           GoRoute(
-            path: '/dashboard/admin/calendar',
+            path: '/dashboard/calendar',
             pageBuilder: (context, state) {
-              final email = auth.user?.email ?? '';
               return NoTransitionPage(
                 key: state.pageKey,
-                child: CalenderView(email: email),
+                child: CalendarView(),
               );
             },
           ),

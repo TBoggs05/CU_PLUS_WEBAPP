@@ -115,7 +115,7 @@ class _DashboardShellState extends State<DashboardShell> {
         context.go('/dashboard/admin/announcements');
         break;
       case SidebarItem.calendar:
-        context.go('/dashboard/admin/calendar');
+        context.go('/dashboard/calendar');
         break;
       case SidebarItem.adminManageStudents:
         context.go('/dashboard/admin/students');
@@ -158,7 +158,7 @@ class _DashboardShellState extends State<DashboardShell> {
           routeItem = SidebarItem.adminAnnouncements;
         } else if (loc.startsWith('/dashboard/student/announcements')) {
           routeItem = SidebarItem.announcements;
-        } else if (loc.startsWith('/dashboard/admin/calendar')) {
+        } else if (loc.startsWith('/dashboard/calendar')) {
           routeItem = SidebarItem.calendar;
         } else if (loc.startsWith('/dashboard/support')) {
           routeItem = SidebarItem.support;
