@@ -16,6 +16,7 @@ import 'package:cu_plus_webapp/features/forms/ui/admin/admin_form_preview_view.d
 import 'package:cu_plus_webapp/features/forms/ui/admin/admin_form_submissions_view.dart';
 import 'package:cu_plus_webapp/features/forms/ui/admin/admin_form_submission_detail_view.dart';
 import 'package:cu_plus_webapp/features/support/ui/support_view.dart';
+import 'package:cu_plus_webapp/features/setting/ui/setting_view.dart';
 
 
 import 'package:flutter/material.dart';
@@ -246,10 +247,13 @@ class MyApp extends StatefulWidget {
           GoRoute(
             path: '/dashboard/support',
             pageBuilder: (context, state) {
-              return NoTransitionPage(
-                key: state.pageKey,
-                child: SupportView(),
-              );
+              return NoTransitionPage(key: state.pageKey, child: SupportView());
+            },
+          ),
+          GoRoute(
+            path: '/dashboard/setting',
+            pageBuilder: (context, state) {
+              return NoTransitionPage(key: state.pageKey, child: SettingView());
             },
           ),
         ],
