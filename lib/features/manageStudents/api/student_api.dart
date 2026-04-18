@@ -27,8 +27,28 @@ class StudentApi {
     }
   }
 
-  Future<List<StudentRow>> getStudents() async {
-    final response = await _client.getJson('/admin/students');
+  Future<List<StudentRow>> getStudents({
+    String? search,
+    String? year,
+    bool? isActive,
+  }) async {
+    final queryParams = <String, String>{};
+
+    if (search != null && search.trim().isNotEmpty) {
+      queryParams['search'] = search.trim();
+    }
+
+    if (year != null && year.trim().isNotEmpty) {
+      queryParams['year'] = year.trim();
+    }
+
+    if (isActive != null) {
+      queryParams['isActive'] = isActive.toString();
+    }
+
+    final uri = Uri(path: '/admin/students', queryParameters: queryParams);
+
+    final response = await _client.getJson(uri.toString());
     final students = response['students'] as List<dynamic>? ?? [];
 
     return students
