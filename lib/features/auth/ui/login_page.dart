@@ -38,48 +38,32 @@ class _LoginPageState extends State<LoginPage> {
   }
 
   Future<void> _onLogin() async {
-    setState(() {
-      _error = null;
-      _tokenPreview = null;
-    });
+  setState(() {
+    _error = null;
+    _loading = true;
+  });
 
-    if (!_formKey.currentState!.validate()) return;
+  try {
+    final api = context.read<AuthApi>();
+    final res = await api.login(
+      email: _emailCtrl.text.trim(),
+      password: _passCtrl.text,
+    );
 
-    setState(() => _loading = true);
-    final client = context.read<ApiClient>();
-    final authApi = AuthApi(client);
-
-    try {
-      final res = await authApi.login(
-        email: _emailCtrl.text.trim(),
-        password: _passCtrl.text,
-      );
-
-      final userMap = res["user"] as Map<String, dynamic>?;
-
-      if (userMap == null) {
-        throw Exception("Invalid user response");
-      }
-
-      // Create SessionUser
-      final user = SessionUser(
-        id: userMap["id"].toString(),
-        email: userMap["email"].toString(),
-        role: userMap["role"].toString(), // IMPORTANT
-      );
-
-      // Store in AuthController
-      context.read<AuthController>().setUser(user);
-
+    if (res["requiresTwoFactor"] == true) {
       if (!mounted) return;
-      context.go("/dashboard");
-
-    } catch (e) {
-      setState(() => _error = e.toString().replaceFirst("Exception: ", ""));
-    } finally {
-      setState(() => _loading = false);
+      final email = Uri.encodeComponent(_emailCtrl.text.trim());
+      context.go("/verify-2fa?email=$email");
+      return;
     }
+
+    throw Exception("Unexpected login response");
+  } catch (e) {
+    setState(() => _error = e.toString().replaceFirst("Exception: ", ""));
+  } finally {
+    if (mounted) setState(() => _loading = false);
   }
+}
 
   @override
   Widget build(BuildContext context) {

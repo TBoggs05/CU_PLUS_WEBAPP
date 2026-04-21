@@ -11,6 +11,8 @@ import 'package:cu_plus_webapp/features/forms/ui/admin/create_form_view.dart';
 import 'package:cu_plus_webapp/features/announcements/ui/student/announcements_view.dart';
 
 import 'package:cu_plus_webapp/features/auth/ui/login_page.dart';
+import 'package:cu_plus_webapp/features/auth/ui/verify_2fa_page.dart';
+
 
 import 'package:cu_plus_webapp/features/dashboard/ui/dashboard_shell.dart';
 import 'package:cu_plus_webapp/features/courseContent/ui/course_content_view.dart';
@@ -65,6 +67,7 @@ class MyApp extends StatefulWidget {
       final location = state.matchedLocation;
 
       final goingToLogin = location == '/login';
+      final goingToVerify2fa = location == '/verify-2fa';
       final goingToLanding = location == '/';
       final goingToDashboard = location.startsWith('/dashboard');
       final goingToAdminRoute = location.startsWith('/dashboard/admin');
@@ -76,7 +79,7 @@ class MyApp extends StatefulWidget {
         return null;
       }
 
-      if (loggedIn && (goingToLogin || goingToLanding)) {
+      if (loggedIn && (goingToLogin || goingToLanding || goingToVerify2fa)) {
         return '/dashboard';
       }
 
@@ -110,6 +113,19 @@ class MyApp extends StatefulWidget {
                 (context, animation, secondaryAnimation, child) {
                   return FadeTransition(opacity: animation, child: child);
                 },
+          );
+        },
+      ),
+      GoRoute(
+        path: '/verify-2fa',
+        pageBuilder: (context, state) {
+          final email = state.uri.queryParameters['email'] ?? '';
+          return CustomTransitionPage(
+            key: state.pageKey,
+            child: VerifyTwoFactorPage(email: email),
+            transitionsBuilder: (context, animation, secondaryAnimation, child) {
+              return FadeTransition(opacity: animation, child: child);
+            },
           );
         },
       ),
