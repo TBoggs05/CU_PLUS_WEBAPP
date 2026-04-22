@@ -2,7 +2,7 @@ name: Deploy Flutter Web to AWS S3
 
 on:
   push:
-    branches: [main]
+    branches: [production]
 
 jobs:
   deploy:
