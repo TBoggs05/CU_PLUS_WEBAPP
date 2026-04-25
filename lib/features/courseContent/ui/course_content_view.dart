@@ -5,8 +5,8 @@ import 'package:cu_plus_webapp/core/network/api_client.dart';
 import 'package:cu_plus_webapp/features/courseContent/api/course_content_api.dart';
 import 'package:cu_plus_webapp/features/forms/api/forms_api.dart';
 import 'package:cu_plus_webapp/core/extensions/auth_extension.dart';
-import 'dart:js_interop';
 import 'package:web/web.dart' as web;
+import 'package:cu_plus_webapp/features/courseContent/widget/action_choice_dialog.dart';
 
 class CourseContentView extends StatefulWidget {
   const CourseContentView({super.key, required this.email});
@@ -255,47 +255,160 @@ class _CourseContentViewState extends State<CourseContentView> {
     await showDialog(
       context: context,
       builder: (context) {
-        return AlertDialog(
-          title: const Text('Create New Folder'),
-          content: TextField(
-            controller: controller,
-            decoration: const InputDecoration(hintText: 'Enter folder name'),
-          ),
-          actions: [
-            TextButton(
-              onPressed: () {
-                Navigator.pop(context);
-              },
-              child: const Text('Cancel'),
-            ),
-            ElevatedButton(
-              onPressed: () async {
-                final title = controller.text.trim();
-                if (title.isEmpty) return;
-
-                try {
-                  final api = CourseContentApi(context.read<ApiClient>());
-                  await api.createRootFolder(title: title);
-
-                  if (!mounted) return;
-                  Navigator.pop(context);
-                  await _loadCourseContentTree();
-                } catch (e) {
-                  if (!mounted) return;
-                  ScaffoldMessenger.of(context).showSnackBar(
-                    SnackBar(
-                      content: Text(
-                        e.toString().replaceFirst('Exception: ', ''),
+        return Dialog(
+          backgroundColor: Colors.transparent,
+          insetPadding: const EdgeInsets.symmetric(horizontal: 24),
+          child: ConstrainedBox(
+            constraints: const BoxConstraints(maxWidth: 420),
+            child: Container(
+              padding: const EdgeInsets.all(20),
+              decoration: BoxDecoration(
+                color: Colors.white,
+                borderRadius: BorderRadius.circular(16),
+                boxShadow: const [
+                  BoxShadow(
+                    color: Colors.black26,
+                    blurRadius: 18,
+                    offset: Offset(0, 8),
+                  ),
+                ],
+              ),
+              child: Column(
+                mainAxisSize: MainAxisSize.min,
+                crossAxisAlignment: CrossAxisAlignment.start,
+                children: [
+                  Row(
+                    mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                    children: [
+                      const Text(
+                        'Create New Folder',
+                        style: TextStyle(
+                          fontSize: 20,
+                          fontWeight: FontWeight.w600,
+                        ),
+                      ),
+                      IconButton(
+                        icon: const Icon(Icons.close),
+                        onPressed: () => Navigator.pop(context),
+                      ),
+                    ],
+                  ),
+                  const SizedBox(height: 8),
+                  Text(
+                    'Enter a name for your new folder.',
+                    style: TextStyle(
+                      fontSize: 14,
+                      color: Colors.grey.shade700,
+                      height: 1.4,
+                    ),
+                  ),
+                  const SizedBox(height: 20),
+                  TextField(
+                    controller: controller,
+                    decoration: InputDecoration(
+                      hintText: 'Folder name',
+                      filled: true,
+                      fillColor: Colors.grey.shade50,
+                      contentPadding: const EdgeInsets.symmetric(
+                        horizontal: 12,
+                        vertical: 14,
+                      ),
+                      border: OutlineInputBorder(
+                        borderRadius: BorderRadius.circular(12),
+                        borderSide: BorderSide(color: Colors.grey.shade300),
+                      ),
+                      enabledBorder: OutlineInputBorder(
+                        borderRadius: BorderRadius.circular(12),
+                        borderSide: BorderSide(color: Colors.grey.shade300),
+                      ),
+                      focusedBorder: OutlineInputBorder(
+                        borderRadius: BorderRadius.circular(12),
+                        borderSide: const BorderSide(color: Color(0xFFB77900)),
                       ),
                     ),
-                  );
-                }
-              },
-              child: const Text('Create'),
+                  ),
+                  const SizedBox(height: 20),
+                  Row(
+                    mainAxisAlignment: MainAxisAlignment.end,
+                    children: [
+                      TextButton(
+                        onPressed: () => Navigator.pop(context),
+                        child: const Text('Cancel'),
+                      ),
+                      const SizedBox(width: 8),
+                      ElevatedButton(
+                        style: ElevatedButton.styleFrom(
+                          backgroundColor: const Color(0xFFFFD971),
+                          foregroundColor: Colors.black,
+                          shape: RoundedRectangleBorder(
+                            borderRadius: BorderRadius.circular(10),
+                          ),
+                          padding: const EdgeInsets.symmetric(
+                            horizontal: 16,
+                            vertical: 12,
+                          ),
+                        ),
+                        onPressed: () async {
+                          final title = controller.text.trim();
+                          if (title.isEmpty) return;
+
+                          try {
+                            final api = CourseContentApi(context.read<ApiClient>());
+                            await api.createRootFolder(title: title);
+
+                            if (!mounted) return;
+                            Navigator.pop(context);
+                            await _loadCourseContentTree();
+                          } catch (e) {
+                            if (!mounted) return;
+                            ScaffoldMessenger.of(context).showSnackBar(
+                              SnackBar(
+                                content: Text(
+                                  e.toString().replaceFirst('Exception: ', ''),
+                                ),
+                              ),
+                            );
+                          }
+                        },
+                        child: const Text('Create'),
+                      ),
+                    ],
+                  ),
+                ],
+              ),
             ),
-          ],
+          ),
         );
       },
+    );
+  }
+
+  Future<void> _showCreateContentDialog() async {
+    await ActionChoiceDialog.show(
+      context,
+      title: 'Create Content',
+      description: 'Choose what you want to add to the course content page.',
+      options: [
+        ActionChoiceOption(
+          icon: Icons.folder_outlined,
+          title: 'Create Folder',
+          description: 'Organize forms and nested content into a folder.',
+          onTap: () async {
+            await _showCreateFolderDialog();
+          },
+        ),
+        ActionChoiceOption(
+          icon: Icons.description_outlined,
+          title: 'Create Form',
+          description: 'Build a new form that students can fill out.',
+          onTap: () async {
+            await context.push('/dashboard/admin/forms/create');
+            if (!mounted) return;
+            await _loadForms();
+            await _loadCourseContentTree();
+          },
+        ),
+      ],
     );
   }
 
@@ -1036,8 +1149,8 @@ class _CourseContentViewState extends State<CourseContentView> {
                       children: [
                         Container(
                           padding: const EdgeInsets.symmetric(
-                            horizontal: 12,
-                            vertical: 4,
+                            horizontal: 10,
+                            vertical: 2,
                           ),
                           decoration: BoxDecoration(
                             border: Border.all(color: Colors.grey.shade400),
@@ -1048,47 +1161,29 @@ class _CourseContentViewState extends State<CourseContentView> {
                             children: [
                               const Text(
                                 'Toggle Edit Mode',
-                                style: TextStyle(fontSize: 16),
                               ),
                               const SizedBox(width: 12),
-                              Switch(
-                                value: isEditMode,
-                                activeThumbColor: Color(0xFFFFD971),
-                                onChanged: (value) {
-                                  setState(() {
-                                    isEditMode = value;
-                                  });
-                                },
+                              SizedBox(
+                                width: 40,
+                                height: 40,
+                                child: FittedBox(
+                                  child: Switch(
+                                    value: isEditMode,
+                                    activeThumbColor: Color(0xFFFFD971),
+                                    onChanged: (value) {
+                                      setState(() {
+                                        isEditMode = value;
+                                      });
+                                    },
+                                  ),
+                                ),
                               ),
                             ],
                           ),
                         ),
-                        PopupMenuButton<String>(
-                          onSelected: (value) async {
-                            if (value == 'folder') {
-                              await _showCreateFolderDialog();
-                              return;
-                            }
-
-                            if (value == 'form') {
-                              await context.push(
-                                '/dashboard/admin/forms/create',
-                              );
-                              if (!mounted) return;
-                              await _loadForms();
-                              await _loadCourseContentTree();
-                            }
-                          },
-                          itemBuilder: (context) => const [
-                            PopupMenuItem<String>(
-                              value: 'folder',
-                              child: Text('Create Folder'),
-                            ),
-                            PopupMenuItem<String>(
-                              value: 'form',
-                              child: Text('Create Form'),
-                            ),
-                          ],
+                        InkWell(
+                          borderRadius: BorderRadius.circular(10),
+                          onTap: _showCreateContentDialog,
                           child: Container(
                             padding: const EdgeInsets.symmetric(
                               horizontal: 18,
@@ -1223,3 +1318,4 @@ class _InfoChip extends StatelessWidget {
     );
   }
 }
+
